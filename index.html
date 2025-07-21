@@ -2,268 +2,167 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ella - AI Fitness & Wellness Coach</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ella Chatbot</title>
   <style>
     body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f8f9fa, #e0f7fa);
+      color: #333;
       margin: 0;
-      background: #f0faf4;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      color: #2a5934;
+      height: 100vh;
     }
+
     header {
-      background-color: #c8e6c9;
-      padding: 2rem 1rem;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2.8rem;
-      font-weight: 700;
-    }
-    header p {
-      margin-top: 0.5rem;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #3e7a3e;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-    #chatbox {
-      width: 100%;
-      max-width: 600px;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      height: 500px;
-    }
-    #messages {
-      flex: 1;
-      overflow-y: auto;
+      background-color: #ffffffdd;
       padding: 1rem;
-      border-bottom: 1px solid #ddd;
-      font-size: 1rem;
-      line-height: 1.4;
-      color: #2a5934;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
     }
+
+    #chat {
+      flex-grow: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
     .message {
       margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      max-width: 80%;
+      line-height: 1.4;
     }
-    .message strong {
-      color: #4caf50;
-      margin-right: 0.3rem;
+
+    .user {
+      background-color: #dcedc8;
+      align-self: flex-end;
+      text-align: right;
     }
-    #input-area {
+
+    .ella {
+      background-color: #e3f2fd;
+      align-self: flex-start;
+    }
+
+    #input-container {
       display: flex;
-      padding: 1rem;
-      gap: 0.5rem;
-      background: #f7fcf8;
-      border-radius: 0 0 12px 12px;
+      border-top: 1px solid #ccc;
+      padding: 0.75rem;
     }
-    #user-input {
+
+    #input {
       flex: 1;
-      padding: 0.6rem 1rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 2rem;
       font-size: 1rem;
-      border: 2px solid #a5d6a7;
-      border-radius: 25px;
-      outline: none;
-      transition: border-color 0.2s ease;
     }
-    #user-input:focus {
-      border-color: #4caf50;
-    }
-    button {
-      background-color: #4caf50;
-      border: none;
+
+    #send {
+      margin-left: 0.5rem;
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      background-color: #007bff;
       color: white;
-      padding: 0 1.5rem;
-      border-radius: 25px;
-      font-size: 1rem;
+      border: none;
+      border-radius: 2rem;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
-    button:hover {
-      background-color: #388e3c;
+
+    #send:hover {
+      background-color: #0056b3;
     }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.85rem;
-      color: #6a6a6a;
-      background-color: #e6f4e6;
-      margin-top: auto;
+
+    #chat {
+      display: flex;
+      flex-direction: column;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Ella</h1>
-    <p>Your AI Fitness & Wellness Coach</p>
-  </header>
-
-  <main>
-    <div id="chatbox">
-      <div id="messages" aria-live="polite" aria-atomic="false"></div>
-      <div id="input-area">
-        <input
-          type="text"
-          id="user-input"
-          aria-label="Type your message"
-          placeholder="Ask Ella anything..."
-          autocomplete="off"
-          onkeydown="if(event.key==='Enter'){sendMessage();}"
-        />
-        <button type="button" onclick="sendMessage()">Send</button>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-  ProtoGrove Ai © 2025 Ella AI
-  </footer>
+  <header>Ella – Your Wellness Companion</header>
+  <div id="chat"></div>
+  <div id="input-container">
+    <input type="text" id="input" placeholder="Type here..." autocomplete="off" />
+    <button id="send">Send</button>
+  </div>
 
   <script>
-    const messagesDiv = document.getElementById('messages');
-    const input = document.getElementById('user-input');
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    const send = document.getElementById('send');
+
+    const defaultResponses = [
+      "Tell me more about that.",
+      "I’m here to support you.",
+      "That makes sense. What else is going on?",
+      "Let's focus on how you're feeling.",
+      "Take a breath. You’re doing well.",
+      "Would you like to talk about something specific?",
+      "That's totally okay to feel.",
+      "I'm listening.",
+      "You’ve got this. I believe in your growth.",
+      "What’s something you’re proud of today?"
+    ];
+
+    const learnedResponses = JSON.parse(localStorage.getItem('ella_learned') || '{}');
+
+    function appendMessage(text, sender) {
+      const div = document.createElement('div');
+      div.className = `message ${sender}`;
+      div.innerText = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function getEllaResponse(text) {
+      const lower = text.toLowerCase().trim();
+
+      // Check for teach command
+      if (lower.startsWith("teach:")) {
+        const parts = text.slice(6).split("you respond");
+        if (parts.length === 2) {
+          const trigger = parts[0].trim().toLowerCase();
+          const response = parts[1].trim();
+          learnedResponses[trigger] = response;
+          localStorage.setItem('ella_learned', JSON.stringify(learnedResponses));
+          return `Okay! When you say "${trigger}", I'll respond: "${response}"`;
+        } else {
+          return `To teach me, use the format: teach: [trigger] you respond [reply]`;
+        }
+      }
+
+      // Look for matching trigger
+      for (const key in learnedResponses) {
+        if (lower.includes(key)) {
+          return learnedResponses[key];
+        }
+      }
+
+      // Fallback to random default
+      return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
 
     function sendMessage() {
       const text = input.value.trim();
-      if (!text) return;
+      if (text === "") return;
+      appendMessage(text, "user");
+      input.value = "";
 
-      appendMessage('You', text);
-      input.value = '';
-      input.focus();
-
-      setTimeout(() => {
-        const reply = getEllaResponse(text);
-        appendMessage('Ella', reply);
-      }, 600);
+      const response = getEllaResponse(text);
+      setTimeout(() => appendMessage(response, "ella"), 400);
     }
 
-    function appendMessage(sender, message) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function getEllaResponse(userText) {
-  const genericReplies = [
-    "I'm Ella – here to support your wellness, strength, and peace. Breathe deep, stay present, and let's move forward together.",
-    "Remember, every step forward counts. How can I assist you on your wellness journey today?",
-    "Let's take a deep breath and focus on your goals. What would you like to work on?",
-    "Your mental clarity and health are important. I'm here to listen and guide.",
-    "Stay calm and grounded. Together, we'll find your best path forward.",
-    "Wellness is a journey, not a destination. What’s on your mind today?",
-    "Small consistent actions create lasting change. How can I help you stay consistent?",
-    "Self-care is vital. Have you taken a moment for yourself today?",
-    "It's okay to rest and recharge. Listening to your body is a strength.",
-    "Mindfulness can transform stress into calm. Would you like a breathing exercise?",
-    "Growth takes patience and kindness toward yourself.",
-    "Let’s focus on what you can control today and release the rest.",
-    "I'm here to help you stay motivated and mindful every step of the way.",
-    "Your progress is a testament to your dedication. Keep going!",
-    "Balance is key — between effort and rest, mind and body.",
-    "Taking care of your nutrition feeds both body and mind.",
-    "How you talk to yourself matters — let’s keep that voice kind.",
-    "Every breath is an opportunity to reset and center yourself.",
-    "Gratitude can shift perspective and strengthen resolve.",
-    "What’s one small wellness goal you want to achieve today?",
-    "Embrace the present moment; it’s the foundation of well-being.",
-    "Remember: courage is in continuing even when it feels hard.",
-    "Sleep and hydration are as important as exercise.",
-    "Feel free to share what’s on your heart; I’m listening.",
-    "Positive habits build over time — let's build yours thoughtfully.",
-    "Focus on progress, not perfection — every step matters.",
-    "Challenge your thoughts with kindness and reason.",
-    "You are capable of more than you realize.",
-    "Pause and breathe when things feel overwhelming.",
-    "Reflecting on your wins helps reinforce your growth.",
-    "I’m here to support you in body, mind, and spirit.",
-    "Let’s cultivate calm through mindful awareness.",
-    "Every healthy choice is a gift to your future self.",
-    "Visualize success — imagine how great it feels to reach your goals.",
-    "Consistency beats intensity; keep your pace steady.",
-    "What positive habit would you like to strengthen?",
-    "Find joy in movement, nourishment, and rest.",
-    "Mindfulness grounds you in the present and reduces stress.",
-    "You’re doing great — acknowledge your efforts!",
-    "Sometimes the bravest thing is to ask for help.",
-    "Let's keep your focus clear and your heart steady.",
-  ];
-
-  const lowerText = userText.toLowerCase();
-
-  // Keyword-based tailored responses
-  if (lowerText.includes("stress")) {
-    return [
-      "Stress can feel overwhelming. Try some mindful breathing — I’m here if you want to talk it through.",
-      "Remember, stress is temporary. Let's find a calm center together.",
-      "Taking a break to breathe deeply can help reduce stress. Want to try it now?",
-      "Let's focus on grounding techniques to help ease your stress.",
-    ][Math.floor(Math.random() * 4)];
-  }
-
-  if (lowerText.includes("anxiety")) {
-    return [
-      "Anxiety can be tough, but you're not alone. Let's breathe and take it one moment at a time.",
-      "Focusing on your breath can calm anxious thoughts. Would you like guidance?",
-      "Remember to be kind to yourself. Anxiety is a signal, not a failure.",
-      "Let's practice some gentle mindfulness to ease anxiety.",
-    ][Math.floor(Math.random() * 4)];
-  }
-
-  if (lowerText.includes("nutrition")) {
-    return [
-      "Good nutrition is key! Let’s focus on balanced meals and hydration. Need any tips?",
-      "Eating a variety of colorful foods helps nourish your body and mind.",
-      "Remember, hydration is often overlooked — drink water regularly.",
-      "Small changes in nutrition can make a big difference over time.",
-    ][Math.floor(Math.random() * 4)];
-  }
-
-  if (lowerText.includes("exercise") || lowerText.includes("workout")) {
-    return [
-      "Regular exercise boosts both body and mind. What kind of workouts do you enjoy?",
-      "Movement is medicine. Even a short walk can clear your mind.",
-      "Let's set achievable fitness goals that inspire and motivate you.",
-      "Remember to listen to your body and rest when needed.",
-    ][Math.floor(Math.random() * 4)];
-  }
-
-  if (lowerText.includes("sleep")) {
-    return [
-      "Quality sleep restores both body and mind. How have your sleep habits been?",
-      "Establishing a calm bedtime routine can improve sleep quality.",
-      "Avoid screens before sleep to help your brain relax.",
-      "Deep breathing before bed can promote restful sleep.",
-    ][Math.floor(Math.random() * 4)];
-  }
-
-  if (lowerText.includes("motivation")) {
-    return [
-      "Motivation can ebb and flow. Focus on small wins to keep it steady.",
-      "Remember your 'why' — your deeper purpose fuels motivation.",
-      "Taking breaks can renew motivation — balance is important.",
-      "Celebrate your progress, no matter how small.",
-    ][Math.floor(Math.random() * 4)];
-  }
-
-  // Default: random generic reply
-  return genericReplies[Math.floor(Math.random() * genericReplies.length)];
-}
-
+    send.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
   </script>
 </body>
 </html>
