@@ -158,10 +158,112 @@
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    function getEllaResponse(text) {
-      // Placeholder calm, kind response - you can replace with AI backend later
-      return "I'm Ella – here to support your wellness, strength, and peace. Breathe deep, stay present, and let's move forward together.";
-    }
+    function getEllaResponse(userText) {
+  const genericReplies = [
+    "I'm Ella – here to support your wellness, strength, and peace. Breathe deep, stay present, and let's move forward together.",
+    "Remember, every step forward counts. How can I assist you on your wellness journey today?",
+    "Let's take a deep breath and focus on your goals. What would you like to work on?",
+    "Your mental clarity and health are important. I'm here to listen and guide.",
+    "Stay calm and grounded. Together, we'll find your best path forward.",
+    "Wellness is a journey, not a destination. What’s on your mind today?",
+    "Small consistent actions create lasting change. How can I help you stay consistent?",
+    "Self-care is vital. Have you taken a moment for yourself today?",
+    "It's okay to rest and recharge. Listening to your body is a strength.",
+    "Mindfulness can transform stress into calm. Would you like a breathing exercise?",
+    "Growth takes patience and kindness toward yourself.",
+    "Let’s focus on what you can control today and release the rest.",
+    "I'm here to help you stay motivated and mindful every step of the way.",
+    "Your progress is a testament to your dedication. Keep going!",
+    "Balance is key — between effort and rest, mind and body.",
+    "Taking care of your nutrition feeds both body and mind.",
+    "How you talk to yourself matters — let’s keep that voice kind.",
+    "Every breath is an opportunity to reset and center yourself.",
+    "Gratitude can shift perspective and strengthen resolve.",
+    "What’s one small wellness goal you want to achieve today?",
+    "Embrace the present moment; it’s the foundation of well-being.",
+    "Remember: courage is in continuing even when it feels hard.",
+    "Sleep and hydration are as important as exercise.",
+    "Feel free to share what’s on your heart; I’m listening.",
+    "Positive habits build over time — let's build yours thoughtfully.",
+    "Focus on progress, not perfection — every step matters.",
+    "Challenge your thoughts with kindness and reason.",
+    "You are capable of more than you realize.",
+    "Pause and breathe when things feel overwhelming.",
+    "Reflecting on your wins helps reinforce your growth.",
+    "I’m here to support you in body, mind, and spirit.",
+    "Let’s cultivate calm through mindful awareness.",
+    "Every healthy choice is a gift to your future self.",
+    "Visualize success — imagine how great it feels to reach your goals.",
+    "Consistency beats intensity; keep your pace steady.",
+    "What positive habit would you like to strengthen?",
+    "Find joy in movement, nourishment, and rest.",
+    "Mindfulness grounds you in the present and reduces stress.",
+    "You’re doing great — acknowledge your efforts!",
+    "Sometimes the bravest thing is to ask for help.",
+    "Let's keep your focus clear and your heart steady.",
+  ];
+
+  const lowerText = userText.toLowerCase();
+
+  // Keyword-based tailored responses
+  if (lowerText.includes("stress")) {
+    return [
+      "Stress can feel overwhelming. Try some mindful breathing — I’m here if you want to talk it through.",
+      "Remember, stress is temporary. Let's find a calm center together.",
+      "Taking a break to breathe deeply can help reduce stress. Want to try it now?",
+      "Let's focus on grounding techniques to help ease your stress.",
+    ][Math.floor(Math.random() * 4)];
+  }
+
+  if (lowerText.includes("anxiety")) {
+    return [
+      "Anxiety can be tough, but you're not alone. Let's breathe and take it one moment at a time.",
+      "Focusing on your breath can calm anxious thoughts. Would you like guidance?",
+      "Remember to be kind to yourself. Anxiety is a signal, not a failure.",
+      "Let's practice some gentle mindfulness to ease anxiety.",
+    ][Math.floor(Math.random() * 4)];
+  }
+
+  if (lowerText.includes("nutrition")) {
+    return [
+      "Good nutrition is key! Let’s focus on balanced meals and hydration. Need any tips?",
+      "Eating a variety of colorful foods helps nourish your body and mind.",
+      "Remember, hydration is often overlooked — drink water regularly.",
+      "Small changes in nutrition can make a big difference over time.",
+    ][Math.floor(Math.random() * 4)];
+  }
+
+  if (lowerText.includes("exercise") || lowerText.includes("workout")) {
+    return [
+      "Regular exercise boosts both body and mind. What kind of workouts do you enjoy?",
+      "Movement is medicine. Even a short walk can clear your mind.",
+      "Let's set achievable fitness goals that inspire and motivate you.",
+      "Remember to listen to your body and rest when needed.",
+    ][Math.floor(Math.random() * 4)];
+  }
+
+  if (lowerText.includes("sleep")) {
+    return [
+      "Quality sleep restores both body and mind. How have your sleep habits been?",
+      "Establishing a calm bedtime routine can improve sleep quality.",
+      "Avoid screens before sleep to help your brain relax.",
+      "Deep breathing before bed can promote restful sleep.",
+    ][Math.floor(Math.random() * 4)];
+  }
+
+  if (lowerText.includes("motivation")) {
+    return [
+      "Motivation can ebb and flow. Focus on small wins to keep it steady.",
+      "Remember your 'why' — your deeper purpose fuels motivation.",
+      "Taking breaks can renew motivation — balance is important.",
+      "Celebrate your progress, no matter how small.",
+    ][Math.floor(Math.random() * 4)];
+  }
+
+  // Default: random generic reply
+  return genericReplies[Math.floor(Math.random() * genericReplies.length)];
+}
+
   </script>
 </body>
 </html>
