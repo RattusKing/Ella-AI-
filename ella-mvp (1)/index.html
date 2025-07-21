@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ella Chatbot</title>
   <style>
     body {
@@ -17,7 +17,7 @@
       background-color: #d7f9e5;
       padding: 2rem;
       text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
@@ -32,7 +32,7 @@
       background: #ffffff;
       padding: 1rem;
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     #messages {
@@ -45,6 +45,20 @@
     .message {
       margin: 0.5rem 0;
       line-height: 1.4;
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+
+    .message.user {
+      text-align: right;
+      background-color: #e8f5e9;
+      margin-left: 2rem;
+    }
+
+    .message.ella {
+      text-align: left;
+      background-color: #f1f8e9;
+      margin-right: 2rem;
     }
 
     .message strong {
@@ -74,11 +88,40 @@
       font-size: 1rem;
     }
 
+    button:hover {
+      background-color: #4caf50;
+    }
+
     footer {
       text-align: center;
       padding: 1rem;
       font-size: 0.9rem;
       color: #888;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    @media (max-width: 600px) {
+      #chatbox {
+        margin: 1rem;
+        padding: 0.5rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      #user-input,
+      button {
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -90,26 +133,42 @@
 
   <main>
     <div id="chatbox">
-      <div id="messages"></div>
+      <div id="messages" role="log" aria-live="polite"></div>
       <div id="input-area">
-        <input type="text" id="user-input" placeholder="Ask Ella anything..." />
-        <button onclick="sendMessage()">Send</button>
+        <label for="user-input" class="visually-hidden">Ask Ella a question</label>
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Ask Ella anything..."
+          aria-label="Ask Ella a question"
+        />
+        <button onclick="sendMessage()" aria-label="Send message">Send</button>
       </div>
     </div>
   </main>
 
   <footer>
-    <p>Built with Stoic logic and Buddhist mindfulness. © 2025 Ella AI</p>
+    <p id="footer-text">Built with Stoic logic and Buddhist mindfulness. © 2025 Ella AI</p>
   </footer>
 
   <script>
     const messagesDiv = document.getElementById('messages');
     const input = document.getElementById('user-input');
 
+    // Enable Enter key to send messages
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
     function sendMessage() {
       const text = input.value.trim();
       if (!text) return;
-
+      if (text.length > 200) {
+        appendMessage('Ella', 'Please keep your message under 200 characters.');
+        return;
+      }
       appendMessage('You', text);
       input.value = '';
       setTimeout(() => {
@@ -120,15 +179,36 @@
 
     function appendMessage(sender, message) {
       const msg = document.createElement('div');
-      msg.className = 'message';
-      msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      msg.className = `message ${sender.toLowerCase()}`;
+      const strong = document.createElement('strong');
+      strong.textContent = `${sender}: `;
+      const textNode = document.createTextNode(message);
+      msg.appendChild(strong);
+      msg.appendChild(textNode);
       messagesDiv.appendChild(msg);
+
+      // Limit to 50 messages for performance
+      if (messagesDiv.children.length > 50) {
+        messagesDiv.removeChild(messagesDiv.firstChild);
+      }
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
     function getEllaResponse(text) {
-      return "I'm Ella – here to support your wellness, strength, and peace. Breathe deep, stay present, and let's move forward together.";
+      const lowerText = text.toLowerCase();
+      if (lowerText.includes('fitness')) {
+        return 'Let’s talk fitness! Try a 10-minute bodyweight workout: squats, push-ups, and planks. Need a plan?';
+      } else if (lowerText.includes('nutrition')) {
+        return 'Nutrition tip: Balance your plate with lean protein, veggies, and complex carbs. Want a meal idea?';
+      } else if (lowerText.includes('mental wellness')) {
+        return 'For mental wellness, try a 5-minute mindfulness meditation. Focus on your breath. Need guidance?';
+      } else {
+        return 'I’m Ella – here to support your wellness, strength, and peace. Ask about fitness, nutrition, or mental wellness!';
+      }
     }
+
+    // Set dynamic copyright year
+    document.getElementById('footer-text').textContent = `Built with Stoic logic and Buddhist mindfulness. © ${new Date().getFullYear()} Ella AI`;
   </script>
 </body>
 </html>
