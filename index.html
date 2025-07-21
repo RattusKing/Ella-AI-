@@ -3,160 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ella AI – Mental Wellness Chatbot</title>
-
-  <!-- Fonts + Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
+  <title>Ella AI – Fitness & Mental Wellness Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
+    body {
       margin: 0;
       padding: 0;
-      font-family: 'Orbitron', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(145deg, #111827, #1f2937, #334155);
+      color: #e0f2f1;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #fff;
+      height: 100vh;
       overflow: hidden;
     }
 
     .container {
-      backdrop-filter: blur(14px);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
       border-radius: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
       width: 90%;
       max-width: 600px;
-      padding: 30px;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.15);
-      text-align: center;
     }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 2.2em;
+      font-weight: 600;
       margin-bottom: 20px;
-      color: #e0f7fa;
+      background: linear-gradient(to right, #00f5d4, #00bbf9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    #chat-box {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 15px;
+    #chatbox {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
       height: 300px;
       overflow-y: auto;
       text-align: left;
+      font-size: 0.95em;
       margin-bottom: 20px;
-    }
-
-    .message {
-      margin: 10px 0;
-      line-height: 1.5;
-    }
-
-    .user {
-      color: #a0e0ff;
-    }
-
-    .ella {
-      color: #ffe0f5;
+      color: #f0fdfa;
     }
 
     #user-input {
-      width: 80%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
       padding: 10px;
-      border: none;
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      margin-bottom: 10px;
+      border: none;
+      outline: none;
+      font-size: 1em;
     }
 
-    #send-button {
-      padding: 10px 20px;
+    button {
+      background-color: #00f5d4;
       border: none;
+      padding: 10px 16px;
       border-radius: 8px;
-      background-color: #00ffff;
-      color: #000;
-      font-weight: bold;
+      color: #111;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background 0.2s ease;
     }
 
-    #send-button:hover {
-      background-color: #00cccc;
+    button:hover {
+      background-color: #00d3b6;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h1>💫 Ella – Your Calm Companion</h1>
-
-    <div id="chat-box">
-      <div class="message ella">Ella: Hey there! I'm here to help you feel focused, calm, and strong. How are you doing today?</div>
+    <h1>Ella – Your Calm, Smart Coach</h1>
+    <div id="chatbox">
+      <div><strong>Ella:</strong> Hey there. I'm Ella – your wellness companion. How can I help today?</div>
     </div>
-
-    <input type="text" id="user-input" placeholder="Type your message..." />
-    <br />
-    <button id="send-button">Send</button>
+    <div id="user-input">
+      <input type="text" id="input" placeholder="Type your message here...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 
-  <!-- JavaScript Chat Logic -->
   <script>
-    const chatBox = document.getElementById('chat-box');
-    const userInput = document.getElementById('user-input');
-    const sendButton = document.getElementById('send-button');
+    const chatbox = document.getElementById('chatbox');
 
-    const responses = [
-      "I'm here for you. What's on your mind?",
-      "Tell me more about that.",
-      "That's completely valid. You're doing your best.",
-      "Want to take a deep breath together?",
-      "Let's slow down. What are you feeling right now?",
-      "You're stronger than you know.",
-      "Would you like a small mental reset?",
-      "How can I support you today?",
-      "You're not alone. I'm with you."
+    const simulatedResponses = [
+      "That's a really thoughtful question. Let's work through it together.",
+      "Consistency is key. You're doing great, even if it doesn’t feel like it today.",
+      "Focus on what you can control. Let go of the rest — that’s where peace lives.",
+      "Try a deep breath. You’re allowed to slow down and reset.",
+      "Let’s turn that challenge into growth. What’s one step you can take today?",
+      "Your effort matters more than the outcome right now.",
+      "In both training and life, discomfort means you're evolving.",
+      "You don’t have to be perfect to be progressing.",
+      "Let’s keep your body and mind in sync. Need a workout tip or a mental reset?",
+      "The past is a teacher, not a sentence. Let’s move forward, one breath at a time."
     ];
 
-    function addMessage(text, sender) {
-      const message = document.createElement('div');
-      message.classList.add('message', sender);
-      message.textContent = `${sender === 'user' ? 'You' : 'Ella'}: ${text}`;
-      chatBox.appendChild(message);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    function sendMessage() {
+      const input = document.getElementById('input');
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
 
-    function getRandomResponse() {
-      return responses[Math.floor(Math.random() * responses.length)];
-    }
+      const userBubble = `<div><strong>You:</strong> ${userMessage}</div>`;
+      chatbox.innerHTML += userBubble;
 
-    sendButton.addEventListener('click', () => {
-      const input = userInput.value.trim();
-      if (!input) return;
-
-      addMessage(input, 'user');
-      userInput.value = '';
+      const response = simulatedResponses[Math.floor(Math.random() * simulatedResponses.length)];
+      const ellaBubble = `<div><strong>Ella:</strong> ${response}</div>`;
 
       setTimeout(() => {
-        const response = getRandomResponse();
-        addMessage(response, 'ella');
-      }, 500);
-    });
+        chatbox.innerHTML += ellaBubble;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      }, 800);
 
-    userInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') sendButton.click();
-    });
+      input.value = '';
+    }
   </script>
-
 </body>
 </html>
 
