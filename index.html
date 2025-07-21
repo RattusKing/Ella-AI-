@@ -2,134 +2,219 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ella AI – Fitness & Mental Wellness Companion</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ella AI — Your Fitness & Wellness Companion</title>
+  <meta name="description" content="Ella — advanced AI assistant for fitness, wellness, and coaching. Your digital workout partner." />
   <style>
-    body {
+    /* Reset & base */
+    * {
       margin: 0;
       padding: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(145deg, #111827, #1f2937, #334155);
-      color: #e0f2f1;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #00ff99;
+    }
+    body {
+      background: #0c0c0f;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
-      overflow: hidden;
+      justify-content: flex-start;
+      padding: 2rem;
+      background-image:
+        radial-gradient(circle at top left, #1f0f35 0%, transparent 50%),
+        radial-gradient(circle at bottom right, #2b1648 0%, transparent 50%);
+      color: #00ff99;
+      overflow-x: hidden;
     }
-
-    .container {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 30px;
-      border-radius: 20px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
-      width: 90%;
-      max-width: 600px;
+    header {
+      font-weight: 900;
+      font-size: 3rem;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+      color: #00ff99;
+      text-shadow: 0 0 15px #00ff99, 0 0 30px #00ff99;
     }
-
-    h1 {
-      font-size: 2.2em;
-      font-weight: 600;
-      margin-bottom: 20px;
-      background: linear-gradient(to right, #00f5d4, #00bbf9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .slogan {
+      font-size: 1.2rem;
+      font-style: italic;
+      margin-bottom: 3rem;
+      color: #cbd3ff;
+      text-shadow: 0 0 10px #a5a9ff;
     }
-
-    #chatbox {
-      background-color: #0f172a;
-      border: 1px solid #334155;
+    main {
+      width: 100%;
+      max-width: 960px;
+      background: #111117cc;
       border-radius: 12px;
-      padding: 20px;
-      height: 300px;
-      overflow-y: auto;
-      text-align: left;
-      font-size: 0.95em;
-      margin-bottom: 20px;
-      color: #f0fdfa;
-    }
-
-    #user-input {
+      padding: 2rem;
+      box-shadow: 0 0 30px #5d3fd3aa;
       display: flex;
-      justify-content: center;
-      gap: 10px;
+      flex-direction: column;
+      gap: 2rem;
     }
-
-    input[type="text"] {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 1em;
+    section {
+      background: #17171e;
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      box-shadow: inset 0 0 10px #00ff99aa;
     }
-
-    button {
-      background-color: #00f5d4;
+    section h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ff99;
+    }
+    /* Chatbot container placeholder */
+    #chatbot {
+      height: 400px;
+      background: #0f0f13;
+      border-radius: 12px;
+      box-shadow: inset 0 0 20px #00ff99aa;
+      padding: 1rem;
+      overflow-y: auto;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #a0ffa0;
+    }
+    /* FAQ list styles */
+    .faq-list {
+      max-height: 450px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      color: #a0ffa0;
+    }
+    .faq-item {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #003300;
+      padding-bottom: 0.5rem;
+    }
+    .faq-question {
+      font-weight: 700;
+      color: #00ff99;
+      margin-bottom: 0.3rem;
+    }
+    .faq-answer {
+      font-weight: 400;
+      color: #b2f2b2;
+    }
+    /* Buttons */
+    .btn {
+      background: #00ff99;
+      color: #0b0b0b;
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
       border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      color: #111;
-      font-weight: 600;
+      border-radius: 30px;
       cursor: pointer;
-      transition: background 0.2s ease;
+      font-size: 1rem;
+      align-self: flex-start;
+      box-shadow: 0 0 20px #00ff99;
+      transition: background 0.3s ease;
+      user-select: none;
     }
-
-    button:hover {
-      background-color: #00d3b6;
+    .btn:hover {
+      background: #00cc77;
+      box-shadow: 0 0 25px #00cc77;
+    }
+    /* Responsive */
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      main {
+        padding: 1rem;
+      }
+      header {
+        font-size: 2rem;
+      }
+      #chatbot {
+        height: 300px;
+      }
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="container">
-    <h1>Ella – Your Calm, Smart Coach</h1>
-    <div id="chatbox">
-      <div><strong>Ella:</strong> Hey there. I'm Ella – your wellness companion. How can I help today?</div>
-    </div>
-    <div id="user-input">
-      <input type="text" id="input" placeholder="Type your message here...">
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
+  <header>Ella AI</header>
+  <div class="slogan">Your Digital Fitness & Wellness Companion</div>
+  <main>
+    <section aria-label="Chatbot Assistant Interface">
+      <h2>Chat with Ella</h2>
+      <div id="chatbot" aria-live="polite" aria-atomic="true">
+        <p><em>Welcome! Ask me anything about fitness, wellness, or coaching.</em></p>
+      </div>
+      <button class="btn" id="clear-chat">Clear Chat</button>
+    </section>
+
+    <section aria-label="Frequently Asked Questions">
+      <h2>Frequently Asked Fitness & Wellness Questions</h2>
+      <div class="faq-list" id="faq-list" tabindex="0" aria-live="polite" aria-atomic="true">
+        <!-- FAQ items will load here -->
+      </div>
+    </section>
+  </main>
 
   <script>
-    const chatbox = document.getElementById('chatbox');
-
-    const simulatedResponses = [
-      "That's a really thoughtful question. Let's work through it together.",
-      "Consistency is key. You're doing great, even if it doesn’t feel like it today.",
-      "Focus on what you can control. Let go of the rest — that’s where peace lives.",
-      "Try a deep breath. You’re allowed to slow down and reset.",
-      "Let’s turn that challenge into growth. What’s one step you can take today?",
-      "Your effort matters more than the outcome right now.",
-      "In both training and life, discomfort means you're evolving.",
-      "You don’t have to be perfect to be progressing.",
-      "Let’s keep your body and mind in sync. Need a workout tip or a mental reset?",
-      "The past is a teacher, not a sentence. Let’s move forward, one breath at a time."
+    // Sample detailed FAQ data — you can expand to 100+ entries in this format
+    const faqs = [
+      {
+        question: "What is the best way to build muscle?",
+        answer: "The best way to build muscle involves progressive overload by gradually increasing the weights or resistance in your workouts, combined with sufficient protein intake (around 1.6-2.2g per kg body weight), adequate rest, and consistency over time."
+      },
+      {
+        question: "How much cardio should I do weekly?",
+        answer: "The American Heart Association recommends at least 150 minutes of moderate-intensity aerobic exercise per week, or 75 minutes of vigorous activity. Adjust based on your goals and fitness level."
+      },
+      {
+        question: "What are the benefits of stretching?",
+        answer: "Stretching improves flexibility, increases range of motion, reduces injury risk, and can help relieve muscle tension and soreness."
+      },
+      {
+        question: "How do I improve my running endurance?",
+        answer: "Incorporate gradual increases in running distance, interval training, and cross-training. Focus on consistent pacing and adequate recovery."
+      },
+      {
+        question: "What nutrients are important for recovery?",
+        answer: "Protein, carbohydrates, and hydration are key. Consuming protein post-workout helps muscle repair, carbs replenish glycogen stores, and fluids restore hydration balance."
+      },
+      // ... Add many more entries here for full 100+ detailed responses ...
     ];
 
-    function sendMessage() {
-      const input = document.getElementById('input');
-      const userMessage = input.value.trim();
-      if (!userMessage) return;
-
-      const userBubble = `<div><strong>You:</strong> ${userMessage}</div>`;
-      chatbox.innerHTML += userBubble;
-
-      const response = simulatedResponses[Math.floor(Math.random() * simulatedResponses.length)];
-      const ellaBubble = `<div><strong>Ella:</strong> ${response}</div>`;
-
-      setTimeout(() => {
-        chatbox.innerHTML += ellaBubble;
-        chatbox.scrollTop = chatbox.scrollHeight;
-      }, 800);
-
-      input.value = '';
+    // Load FAQ into page
+    const faqList = document.getElementById('faq-list');
+    function loadFAQs() {
+      faqList.innerHTML = '';
+      faqs.forEach(({question, answer}, idx) => {
+        const item = document.createElement('div');
+        item.classList.add('faq-item');
+        item.tabIndex = 0;
+        item.innerHTML = `
+          <div class="faq-question" aria-label="Question">${question}</div>
+          <div class="faq-answer" aria-label="Answer">${answer}</div>
+        `;
+        faqList.appendChild(item);
+      });
     }
+    loadFAQs();
+
+    // Simple chatbot interaction placeholder
+    const chatbot = document.getElementById('chatbot');
+    const clearBtn = document.getElementById('clear-chat');
+
+    clearBtn.addEventListener('click', () => {
+      chatbot.innerHTML = '<p><em>Welcome! Ask me anything about fitness, wellness, or coaching.</em></p>';
+    });
+
+    // For now just a simple prompt to demonstrate — can integrate with AI backend later
+    chatbot.addEventListener('click', () => {
+      alert('Integration with AI backend coming soon!');
+    });
   </script>
 </body>
 </html>
-
