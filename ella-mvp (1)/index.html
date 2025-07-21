@@ -3,18 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ella – Fitness & Mental Wellness AI</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Ella Chatbot</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4fdf6;
+      color: #2d2d2d;
+    }
+
+    header {
+      background-color: #d7f9e5;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0;
+      color: #388e3c;
+    }
+
+    #chatbox {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      padding-right: 5px;
+    }
+
+    .message {
+      margin: 0.5rem 0;
+      line-height: 1.4;
+    }
+
+    .message strong {
+      color: #4caf50;
+    }
+
+    #input-area {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #66bb6a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>Ella</h1>
     <p>Your AI Coach for Fitness, Mental Wellness, and Nutrition</p>
   </header>
-
-  <section id="avatar">
-    <iframe src="avatar/index.html" frameborder="0" width="100%" height="400px"></iframe>
-  </section>
 
   <main>
     <div id="chatbox">
@@ -30,6 +102,33 @@
     <p>Built with Stoic logic and Buddhist mindfulness. © 2025 Ella AI</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    const messagesDiv = document.getElementById('messages');
+    const input = document.getElementById('user-input');
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage('You', text);
+      input.value = '';
+      setTimeout(() => {
+        const response = getEllaResponse(text);
+        appendMessage('Ella', response);
+      }, 500);
+    }
+
+    function appendMessage(sender, message) {
+      const msg = document.createElement('div');
+      msg.className = 'message';
+      msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      messagesDiv.appendChild(msg);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function getEllaResponse(text) {
+      return "I'm Ella – here to support your wellness, strength, and peace. Breathe deep, stay present, and let's move forward together.";
+    }
+  </script>
 </body>
 </html>
