@@ -69,7 +69,7 @@
       color: #00ff99;
       text-shadow: 0 0 10px #00ff99;
     }
-    /* Chatbot container placeholder */
+    /* Chatbot container */
     #chatbot {
       height: 400px;
       background: #0f0f13;
@@ -81,30 +81,45 @@
       font-size: 1rem;
       line-height: 1.5;
       color: #a0ffa0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      white-space: pre-wrap;
     }
-    /* FAQ list styles */
-    .faq-list {
-      max-height: 450px;
-      overflow-y: auto;
-      font-size: 0.95rem;
-      color: #a0ffa0;
+    .message {
+      max-width: 80%;
+      padding: 0.5rem 1rem;
+      border-radius: 15px;
     }
-    .faq-item {
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #003300;
-      padding-bottom: 0.5rem;
+    .user-message {
+      background: #00ff9955;
+      color: #003300;
+      align-self: flex-end;
+      text-align: right;
     }
-    .faq-question {
-      font-weight: 700;
+    .bot-message {
+      background: #003300cc;
       color: #00ff99;
-      margin-bottom: 0.3rem;
+      align-self: flex-start;
+      text-align: left;
     }
-    .faq-answer {
-      font-weight: 400;
-      color: #b2f2b2;
+    /* Input area */
+    #input-area {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
     }
-    /* Buttons */
-    .btn {
+    #user-input {
+      flex-grow: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 30px;
+      border: none;
+      font-size: 1rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      outline: none;
+      color: #0b0b0b;
+    }
+    #send-btn {
       background: #00ff99;
       color: #0b0b0b;
       font-weight: 700;
@@ -113,14 +128,28 @@
       border-radius: 30px;
       cursor: pointer;
       font-size: 1rem;
-      align-self: flex-start;
       box-shadow: 0 0 20px #00ff99;
       transition: background 0.3s ease;
       user-select: none;
     }
-    .btn:hover {
+    #send-btn:hover {
       background: #00cc77;
       box-shadow: 0 0 25px #00cc77;
+    }
+    /* Clear button */
+    #clear-chat {
+      background: transparent;
+      border: none;
+      color: #00ff99;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 0.5rem;
+      align-self: flex-end;
+    }
+    #clear-chat:hover {
+      color: #00cc77;
     }
     /* Responsive */
     @media (max-width: 640px) {
@@ -147,9 +176,20 @@
     <section aria-label="Chatbot Assistant Interface">
       <h2>Chat with Ella</h2>
       <div id="chatbot" aria-live="polite" aria-atomic="true">
-        <p><em>Welcome! Ask me anything about fitness, wellness, or coaching.</em></p>
+        <div class="bot-message message">Welcome! Ask me anything about fitness, wellness, or coaching.</div>
       </div>
-      <button class="btn" id="clear-chat">Clear Chat</button>
+      <div id="input-area">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Type your question here..."
+          aria-label="Type your question to Ella"
+          autocomplete="off"
+          autofocus
+        />
+        <button id="send-btn" aria-label="Send question">Send</button>
+      </div>
+      <button id="clear-chat" aria-label="Clear chat history">Clear Chat</button>
     </section>
 
     <section aria-label="Frequently Asked Questions">
@@ -161,38 +201,43 @@
   </main>
 
   <script>
-    // Sample detailed FAQ data — you can expand to 100+ entries in this format
+    // Sample detailed FAQ data — can be expanded to 100+ entries
     const faqs = [
       {
         question: "What is the best way to build muscle?",
-        answer: "The best way to build muscle involves progressive overload by gradually increasing the weights or resistance in your workouts, combined with sufficient protein intake (around 1.6-2.2g per kg body weight), adequate rest, and consistency over time."
+        answer:
+          "The best way to build muscle involves progressive overload by gradually increasing weights or resistance, sufficient protein intake (1.6-2.2g/kg body weight), rest, and consistency."
       },
       {
         question: "How much cardio should I do weekly?",
-        answer: "The American Heart Association recommends at least 150 minutes of moderate-intensity aerobic exercise per week, or 75 minutes of vigorous activity. Adjust based on your goals and fitness level."
+        answer:
+          "The American Heart Association recommends at least 150 minutes of moderate-intensity aerobic exercise per week or 75 minutes of vigorous activity."
       },
       {
         question: "What are the benefits of stretching?",
-        answer: "Stretching improves flexibility, increases range of motion, reduces injury risk, and can help relieve muscle tension and soreness."
+        answer:
+          "Stretching improves flexibility, increases range of motion, reduces injury risk, and relieves muscle tension."
       },
       {
         question: "How do I improve my running endurance?",
-        answer: "Incorporate gradual increases in running distance, interval training, and cross-training. Focus on consistent pacing and adequate recovery."
+        answer:
+          "Gradually increase running distance, incorporate interval training and cross-training, maintain consistent pacing, and allow recovery."
       },
       {
         question: "What nutrients are important for recovery?",
-        answer: "Protein, carbohydrates, and hydration are key. Consuming protein post-workout helps muscle repair, carbs replenish glycogen stores, and fluids restore hydration balance."
-      },
-      // ... Add many more entries here for full 100+ detailed responses ...
+        answer:
+          "Protein aids muscle repair, carbohydrates replenish glycogen stores, and hydration restores fluid balance after exercise."
+      }
+      // Add more FAQs here...
     ];
 
     // Load FAQ into page
-    const faqList = document.getElementById('faq-list');
+    const faqList = document.getElementById("faq-list");
     function loadFAQs() {
-      faqList.innerHTML = '';
-      faqs.forEach(({question, answer}, idx) => {
-        const item = document.createElement('div');
-        item.classList.add('faq-item');
+      faqList.innerHTML = "";
+      faqs.forEach(({ question, answer }) => {
+        const item = document.createElement("div");
+        item.classList.add("faq-item");
         item.tabIndex = 0;
         item.innerHTML = `
           <div class="faq-question" aria-label="Question">${question}</div>
@@ -203,17 +248,56 @@
     }
     loadFAQs();
 
-    // Simple chatbot interaction placeholder
-    const chatbot = document.getElementById('chatbot');
-    const clearBtn = document.getElementById('clear-chat');
+    // Chatbot functionality (demo replies for now)
+    const chatbot = document.getElementById("chatbot");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const clearBtn = document.getElementById("clear-chat");
 
-    clearBtn.addEventListener('click', () => {
-      chatbot.innerHTML = '<p><em>Welcome! Ask me anything about fitness, wellness, or coaching.</em></p>';
+    function appendMessage(text, sender = "bot") {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+      msgDiv.textContent = text;
+      chatbot.appendChild(msgDiv);
+      chatbot.scrollTop = chatbot.scrollHeight;
+    }
+
+    function getBotReply(userText) {
+      // Placeholder simple response logic:
+      // If question matches FAQ question (basic), respond with answer, else default
+      const lowerText = userText.toLowerCase();
+      const match = faqs.find(faq =>
+        faq.question.toLowerCase().includes(lowerText) ||
+        lowerText.includes(faq.question.toLowerCase())
+      );
+      if (match) return match.answer;
+      return "Sorry, I’m still learning! Please ask another question or check the FAQ below.";
+    }
+
+    function handleSend() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      appendMessage(text, "user");
+      userInput.value = "";
+      // Simulate bot typing delay
+      setTimeout(() => {
+        const reply = getBotReply(text);
+        appendMessage(reply, "bot");
+      }, 600);
+    }
+
+    sendBtn.addEventListener("click", handleSend);
+    userInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSend();
+      }
     });
-
-    // For now just a simple prompt to demonstrate — can integrate with AI backend later
-    chatbot.addEventListener('click', () => {
-      alert('Integration with AI backend coming soon!');
+    clearBtn.addEventListener("click", () => {
+      chatbot.innerHTML = `<div class="bot-message message">Welcome! Ask me anything about fitness, wellness, or coaching.</div>`;
+      userInput.value = "";
+      userInput.focus();
     });
   </script>
 </body>
