@@ -11,6 +11,43 @@
   <link rel="icon" type="image/png" href="/favicon.png" /> <!-- Add favicon -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
   <style>
+
+  <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Ella AI</title>
+</head>
+<body>
+  <h1>Talk to Ella</h1>
+  <textarea id="userInput" rows="5" cols="40" placeholder="Type your message..."></textarea><br/>
+  <button onclick="askElla()">Send</button>
+  <p><strong>Ella says:</strong> <span id="response"></span></p>
+
+  <script>
+    function askElla() {
+      const prompt = document.getElementById("userInput").value;
+
+      fetch("https://ella-backend-uqu5.onrender.com/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt: prompt })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("response").innerText = data.response || "No reply.";
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("response").innerText = "Error: could not connect to server.";
+      });
+    }
+  </script>
+</body>
+</html>
+
     /* Reset and Base Styles */
     * {
       margin: 0;
@@ -462,4 +499,3 @@
 </html>
 
 
-is this my full working front end? can i connect the back end here?
