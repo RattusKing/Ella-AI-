@@ -1,38 +1,29 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os
 import groq
 
 app = Flask(__name__)
 CORS(app)
 
-# Set Groq API key from environment variable
-groq.api_key = os.getenv("GROQ_API_KEY")
+client = groq.Groq(api_key="your_groq_api_key")
 
-@app.route("/")
-def home():
-    return "Ella backend (Groq) is running!"
-
-@app.route("/chat", methods=["POST"])
+@app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
-    user_message = data.get("message")
-
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+    user_input = request.json.get("message", "")
 
     try:
-        response = groq.ChatCompletion.create(
+        chat_completion = client.chat.completions.create(
             model="mixtral-8x7b-32768",
             messages=[
-                {"role": "system", "content": "You are Ella, a kind, intelligent wellness companion."},
-                {"role": "user", "content": user_message}
+                {"role": "system", "content": "You are Ella, a warm and helpful fitness and mental wellness assistant."},
+                {"role": "user", "content": user_input}
             ]
         )
-        reply = response.choices[0].message["content"]
-        return jsonify({"response": reply})
+        response = chat_completion.choices[0].message.content
+        return jsonify({"response": response})
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"response": "Sorry, something went wrong."}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
