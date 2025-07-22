@@ -358,19 +358,11 @@
     const clearBtn = document.getElementById('clear-chat');
 
     // Load chat history from localStorage
-    function loadChatHistory() {
-      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-      history.forEach(({ text, sender, timestamp }) => {
-        appendMessage(text, sender, new Date(timestamp));
-      });
-    }
+    let conversationHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
 
-    // Save chat history to localStorage
-    function saveChatHistory(text, sender, timestamp) {
-      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-      history.push({ text, sender, timestamp });
-      localStorage.setItem('chatHistory', JSON.stringify(history));
-    }
+    // Generate unique user ID for multi-user support
+    const userId = localStorage.getItem('ellaUserId') || crypto.randomUUID();
+    localStorage.setItem('ellaUserId', userId);
 
     // Append Message
     function appendMessage(text, sender = 'bot', date = new Date()) {
@@ -382,6 +374,19 @@
       `;
       chatbot.appendChild(message);
       chatbot.scrollTop = chatbot.scrollHeight;
+    }
+
+    // Load chat history
+    function loadChatHistory() {
+      conversationHistory.forEach(({ text, sender, timestamp }) => {
+        appendMessage(text, sender, new Date(timestamp));
+      });
+    }
+
+    // Save chat history to localStorage
+    function saveChatHistory(text, sender, timestamp) {
+      conversationHistory.push({ text, sender, timestamp });
+      localStorage.setItem('chatHistory', JSON.stringify(conversationHistory));
     }
 
     // Show Typing Indicator
@@ -407,14 +412,14 @@
     }
 
     // Backend Communication
-    async function sendMessageToBackend(message) {
+    async function sendMessageToBackend(message, history) {
       try {
         const response = await fetch('https://ella-backend-uqu5.onrender.com/ask', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ prompt: message })
+          body: JSON.stringify({ prompt: message, history, user_id: userId })
         });
 
         if (!response.ok) {
@@ -443,7 +448,7 @@
       const indicator = showTypingIndicator();
 
       try {
-        const response = await sendMessageToBackend(sanitizedText);
+        const response = await sendMessageToBackend(sanitizedText, conversationHistory);
         setTimeout(() => {
           removeTypingIndicator(indicator);
           appendMessage(response, 'bot');
@@ -467,6 +472,7 @@
     clearBtn.addEventListener('click', () => {
       chatbot.innerHTML = '';
       localStorage.removeItem('chatHistory');
+      conversationHistory = [];
       appendMessage('Welcome! Ask me anything about fitness, wellness, or coaching.', 'bot');
       saveChatHistory('Welcome! Ask me anything about fitness, wellness, or coaching.', 'bot', new Date());
     });
