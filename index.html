@@ -2,127 +2,464 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ella AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ella AI — Advanced fitness and wellness AI companion for gyms and personal coaching." />
+  <meta name="keywords" content="fitness, wellness, AI, chatbot, gym, coaching" />
+  <meta name="author" content="Ella AI Team" />
+  <meta name="robots" content="index, follow" />
+  <title>Ella AI — Enterprise Fitness & Wellness Assistant</title>
+  <link rel="icon" type="image/png" href="/favicon.png" /> <!-- Add favicon -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+    /* Reset and Base Styles */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #0a0a23; /* Darker, more professional navy tone */
+      color: #e0e0e0;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      align-items: center;
+      padding: 2rem 1rem;
+      background-image:
+        radial-gradient(circle at top left, #1f0f35 0%, transparent 50%),
+        radial-gradient(circle at bottom right, #2b1648 0%, transparent 50%);
     }
 
-    #chat-container {
-      flex: 1;
-      padding: 20px;
+    /* Header */
+    header {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 2.5rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      color: #00cc88; /* Softer green for professionalism */
+      text-shadow: 0 0 10px rgba(0, 204, 136, 0.5);
+      user-select: none;
+    }
+    .slogan {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 2rem;
+      color: #b0c4ff;
+      text-shadow: 0 0 5px rgba(106, 132, 255, 0.3);
+    }
+
+    /* Main Container */
+    main {
+      width: 100%;
+      max-width: 1024px; /* Wider for enterprise look */
+      background: rgba(18, 18, 39, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    /* Section Styling */
+    section {
+      background: #1c1c27;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: inset 0 0 10px rgba(0, 204, 136, 0.2);
+    }
+    section h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+      color: #00cc88;
+      text-shadow: 0 0 10px rgba(0, 204, 136, 0.5);
+    }
+
+    /* Chatbot Container */
+    #chatbot {
+      background: #101017;
+      border-radius: 12px;
+      height: 500px; /* Slightly taller for better UX */
       overflow-y: auto;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
+      gap: 1rem;
+      font-family: 'Inter', monospace;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+      scrollbar-width: thin;
+      scrollbar-color: #00cc88 #1c1c27;
     }
-
-    #input-container {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #ccc;
-      background-color: #fff;
+    #chatbot::-webkit-scrollbar {
+      width: 8px;
     }
-
-    #user-input {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
+    #chatbot::-webkit-scrollbar-thumb {
+      background: #00cc88;
       border-radius: 4px;
     }
-
-    #send-button {
-      padding: 10px 15px;
-      margin-left: 10px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+    #chatbot::-webkit-scrollbar-track {
+      background: #1c1c27;
     }
 
-    #send-button:hover {
-      background-color: #0056b3;
-    }
-
+    /* Message Styling */
     .message {
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 5px;
       max-width: 80%;
+      padding: 0.8rem 1.2rem;
+      border-radius: 20px;
+      position: relative;
+      word-break: break-word;
+      animation: fadeIn 0.3s ease;
     }
-
     .user-message {
-      background-color: #d1ecf1;
       align-self: flex-end;
+      background: #00cc8855;
+      color: #ffffff;
+      text-align: right;
+    }
+    .bot-message {
+      align-self: flex-start;
+      background: #003322cc;
+      color: #e0e0e0;
+      text-align: left;
+    }
+    .timestamp {
+      font-size: 0.75rem;
+      opacity: 0.6;
+      margin-top: 0.4rem;
+      color: #b0c4ff;
     }
 
-    .ai-message {
-      background-color: #e2e3e5;
-      align-self: flex-start;
+    /* Typing Indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.8rem 1.2rem;
+    }
+    .typing-indicator > div {
+      width: 8px;
+      height: 8px;
+      background: #00cc88;
+      border-radius: 50%;
+      animation: blink 1.2s infinite ease-in-out;
+    }
+    .typing-indicator > div:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator > div:nth-child(3) { animation-delay: 0.4s; }
+    @keyframesFusekiCodegen
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; }
+      40% { opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Input Area */
+    #input-area {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.8rem;
+    }
+    #user-input {
+      flex-grow: 1;
+      border-radius: 30px;
+      border: 1px solid #00cc88;
+      padding: 0.9rem 1.5rem;
+      font-size: 1rem;
+      outline: none;
+      color: #ffffff;
+      background: #1c1c27;
+      transition: border-color 0.3s ease;
+    }
+    #user-input:focus {
+      border-color: #00ff99;
+      box-shadow: 0 0 8px rgba(0, 204, 136, 0.3);
+    }
+    #user-input::placeholder {
+      color: #b0c4ff;
+      font-style: italic;
+    }
+    #send-btn {
+      background: #00cc88;
+      color: #ffffff;
+      font-weight: 600;
+      border: none;
+      border-radius: 30px;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 204, 136, 0.3);
+      transition: all 0.3s ease;
+    }
+    #send-btn:hover, #send-btn:focus {
+      background: #00b377;
+      box-shadow: 0 4px 15px rgba(0, 204, 136, 0.5);
+      outline: none;
+    }
+    #send-btn:disabled {
+      background: #005522;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Clear Chat Button */
+    #clear-chat {
+      margin-top: 0.8rem;
+      background: transparent;
+      border: none;
+      color: #00cc88;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: underline;
+      align-self: flex-end;
+      transition: color 0.3s ease;
+    }
+    #clear-chat:hover, #clear-chat:focus {
+      color: #00b377;
+      outline: none;
+    }
+
+    /* FAQ Styling */
+    .faq-list {
+      max-height: 450px;
+      overflow-y: auto;
+      font-size: 1rem;
+      color: #e0e0e0;
+      padding-right: 0.5rem;
+    }
+    .faq-item {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #2a2a3b;
+      padding-bottom: 0.8rem;
+    }
+    .faq-question {
+      font-weight: 600;
+      color: #00cc88;
+      margin-bottom: 0.4rem;
+    }
+    .faq-answer {
+      font-weight: 400;
+      color: #b0c4ff;
+      line-height: 1.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body { padding: 1.5rem; }
+      main { padding: 1.5rem; }
+      header { font-size: 2rem; }
+      #chatbot { height: 400px; }
+      #user-input, #send-btn { font-size: 0.95rem; }
+    }
+    @media (max-width: 480px) {
+      header { font-size: 1.8rem; }
+      .slogan { font-size: 1rem; }
+      #chatbot { height: 350px; }
+      #input-area { flex-direction: column; }
+      #user-input, #send-btn { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <div id="chat-container"></div>
-  <div id="input-container">
-    <input type="text" id="user-input" placeholder="Talk to Ella..." />
-    <button id="send-button">Send</button>
-  </div>
+  <header>Ella AI</header>
+  <div class="slogan">Your Enterprise Fitness & Wellness Companion</div>
+  <main>
+    <section aria-label="Chatbot Assistant Interface">
+      <h2>Chat with Ella</h2>
+      <div id="chatbot" role="log" aria-live="polite">
+        <div class="bot-message message" aria-live="polite">
+          Welcome! Ask me anything about fitness, wellness, or coaching.
+        </div>
+      </div>
+      <div id="input-area">
+        <input
+          type="text"
+          id="user-input"
+          placeholder="Type your question here..."
+          aria-label="Type your question to Ella"
+          autocomplete="off"
+          autofocus
+        />
+        <button id="send-btn" aria-label="Send question">Send</button>
+      </div>
+      <button id="clear-chat" aria-label="Clear chat history">Clear Chat</button>
+    </section>
+
+    <section aria-label="Frequently Asked Questions">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-list" id="faq-list" tabindex="0" aria-live="polite">
+        <!-- FAQ items dynamically loaded -->
+      </div>
+    </section>
+  </main>
 
   <script>
-    const chatContainer = document.getElementById("chat-container");
-    const userInput = document.getElementById("user-input");
-    const sendButton = document.getElementById("send-button");
+    // FAQ Data
+    const faqs = [
+      {
+        question: "What is the best way to build muscle?",
+        answer: "Focus on progressive overload, consume 1.6–2.2g of protein per kg of body weight daily, prioritize rest, and maintain consistent workouts."
+      },
+      {
+        question: "How much cardio should I do weekly?",
+        answer: "Aim for 150 minutes of moderate-intensity or 75 minutes of vigorous aerobic exercise per week, adjusted to your goals."
+      },
+      {
+        question: "What are the benefits of stretching?",
+        answer: "Stretching improves flexibility, range of motion, injury prevention, and recovery."
+      },
+      {
+        question: "How do I improve my running endurance?",
+        answer: "Increase distance gradually, use interval training, cross-train, and prioritize recovery."
+      },
+      {
+        question: "What nutrients are important for recovery?",
+        answer: "Protein, carbohydrates, and hydration are key for muscle repair and glycogen replenishment."
+      }
+    ];
 
-    const BACKEND_URL = "https://ella-backend-uqu5.onrender.com/api/chat"; // ✅ Your live backend
-
-    function appendMessage(text, className) {
-      const messageEl = document.createElement("div");
-      messageEl.className = `message ${className}`;
-      messageEl.innerText = text;
-      chatContainer.appendChild(messageEl);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+    // Utility: Format Timestamp
+    function formatTimestamp(date) {
+      const h = date.getHours() % 12 || 12;
+      const m = date.getMinutes().toString().padStart(2, '0');
+      const ampm = date.getHours() >= 12 ? 'pm' : 'am';
+      return `${h}:${m} ${ampm}`;
     }
 
+    // Load FAQs
+    const faqList = document.getElementById('faq-list');
+    function loadFAQs() {
+      faqList.innerHTML = '';
+      faqs.forEach(({ question, answer }) => {
+        const item = document.createElement('div');
+        item.classList.add('faq-item');
+        item.tabIndex = 0;
+        item.innerHTML = `
+          <div class="faq-question" aria-label="Question">${question}</div>
+          <div class="faq-answer" aria-label="Answer">${answer}</div>
+        `;
+        faqList.appendChild(item);
+      });
+    }
+    loadFAQs();
+
+    // Chatbot Functionality
+    const chatbot = document.getElementById('chatbot');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const clearBtn = document.getElementById('clear-chat');
+
+    // Load chat history from localStorage
+    function loadChatHistory() {
+      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      history.forEach(({ text, sender, timestamp }) => {
+        appendMessage(text, sender, new Date(timestamp));
+      });
+    }
+
+    // Save chat history to localStorage
+    function saveChatHistory(text, sender, timestamp) {
+      const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      history.push({ text, sender, timestamp });
+      localStorage.setItem('chatHistory', JSON.stringify(history));
+    }
+
+    // Append Message
+    function appendMessage(text, sender = 'bot', date = new Date()) {
+      const message = document.createElement('div');
+      message.classList.add('message', `${sender}-message`);
+      message.innerHTML = `
+        ${text}
+        <div class="timestamp">${formatTimestamp(date)}</div>
+      `;
+      chatbot.appendChild(message);
+      chatbot.scrollTop = chatbot.scrollHeight;
+    }
+
+    // Show Typing Indicator
+    function showTypingIndicator() {
+      const indicator = document.createElement('div');
+      indicator.classList.add('typing-indicator', 'bot-message');
+      indicator.innerHTML = `<div></div><div></div><div></div>`;
+      chatbot.appendChild(indicator);
+      chatbot.scrollTop = chatbot.scrollHeight;
+      return indicator;
+    }
+
+    // Remove Typing Indicator
+    function removeTypingIndicator(indicator) {
+      indicator.remove();
+    }
+
+    // Sanitize Input
+    function sanitizeInput(input) {
+      const div = document.createElement('div');
+      div.textContent = input;
+      return div.innerHTML;
+    }
+
+    // Handle Send Message
     async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
 
-      appendMessage("You: " + text, "user-message");
-      userInput.value = "";
+      const sanitizedText = sanitizeInput(text);
+      sendBtn.disabled = true;
+      appendMessage(sanitizedText, 'user');
+      saveChatHistory(sanitizedText, 'user', new Date());
+      userInput.value = '';
+
+      const indicator = showTypingIndicator();
 
       try {
-        const response = await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ message: text })
+        // Simulated API call (replace with actual backend API)
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: sanitizedText })
         });
-
-        if (!response.ok) throw new Error("Server error");
-
         const data = await response.json();
-        appendMessage("Ella: " + data.response, "ai-message");
+        setTimeout(() => {
+          removeTypingIndicator(indicator);
+          appendMessage(data.response || 'Sorry, I didn’t understand that.', 'bot');
+          saveChatHistory(data.response, 'bot', new Date());
+          sendBtn.disabled = false;
+        }, 1000); // Simulated delay
       } catch (error) {
-        appendMessage("Ella: Sorry, I couldn't connect to the server.", "ai-message");
-        console.error("Error:", error);
+        removeTypingIndicator(indicator);
+        appendMessage('Error: Could not connect to the server.', 'bot');
+        saveChatHistory('Error: Could not connect to the server.', 'bot', new Date());
+        sendBtn.disabled = false;
       }
     }
 
-    sendButton.addEventListener("click", sendMessage);
-    userInput.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") sendMessage();
+    // Event Listeners
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !sendBtn.disabled) sendMessage();
     });
+
+    clearBtn.addEventListener('click', () => {
+      chatbot.innerHTML = '';
+      localStorage.removeItem('chatHistory');
+      appendMessage('Welcome! Ask me anything about fitness, wellness, or coaching.', 'bot');
+      saveChatHistory('Welcome! Ask me anything about fitness, wellness, or coaching.', 'bot', new Date());
+    });
+
+    // Initialize
+    loadChatHistory();
   </script>
 </body>
 </html>
+
+
+is this my full working front end? can i connect the back end here?
