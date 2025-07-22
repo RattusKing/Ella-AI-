@@ -1,13 +1,14 @@
-from flask_cors import CORS
-app = Flask(__name__)
-CORS(app)
-# app.py
 
 from flask import Flask, request, jsonify
 import os
 import requests
 
 app = Flask(__name__)
+
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
+
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_MODEL = "llama3-70b-8192"
