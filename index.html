@@ -317,53 +317,7 @@
       box-shadow: none;
     }
 
-    /* History Input and Button */
-    #history-container {
-      margin-top: 1rem;
-      display: flex;
-      gap: 0.8rem;
-    }
-    #history-query {
-      flex-grow: 1;
-      border-radius: 30px;
-      border: 1px solid #00cc88;
-      padding: 0.6rem 1.5rem;
-      font-size: 0.9rem;
-      outline: none;
-      color: #ffffff;
-      background: #1c1c27;
-      transition: border-color 0.3s ease;
-    }
-    #history-query:focus {
-      border-color: #00ff99;
-      box-shadow: 0 0 8px rgba(0, 204, 136, 0.3);
-    }
-    #history-query::placeholder {
-      color: #b0c4ff;
-      font-style: italic;
-    }
-    #history-btn {
-      background: #00cc88;
-      color: #ffffff;
-      font-weight: 600;
-      border: none;
-      border-radius: 30px;
-      padding: 0.6rem 2rem;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0, 204, 136, 0.3);
-      transition: all 0.3s ease;
-    }
-    #history-btn:hover, #history-btn:focus {
-      background: #00b377;
-      box-shadow: 0 4px 15px rgba(0, 204, 136, 0.5);
-      outline: none;
-    }
-    #history-btn:disabled {
-      background: #005522;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+
 
     /* Clear Chat Button */
     #clear-chat {
@@ -457,13 +411,13 @@
   </div>
 
   <header>Ella AI</header>
-  <div class="slogan">Your Enterprise Fitness & Wellness Companion</div>
+  <div class="slogan">Your Fitness & Wellness Companion</div>
   <main>
     <section aria-label="Chatbot Assistant Interface">
       <h2>Chat with Ella</h2>
       <div id="chatbot" role="log" aria-live="polite">
         <div class="bot-message message" aria-live="polite">
-          Welcome! Ask me anything about fitness, wellness, or coaching.
+          Welcome! Ask me anything about fitness, wellness.
         </div>
       </div>
       <div id="history-container">
@@ -474,8 +428,8 @@
         <input
           type="text"
           id="user-input"
-          placeholder="Type your question here..."
-          aria-label="Type your question to Ella"
+          placeholder="Chat here..."
+          aria-label="Talk to Ella"
           autocomplete="off"
           autofocus
         />
