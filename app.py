@@ -13,7 +13,7 @@ from datetime import datetime
 app = Flask(__name__)
 load_dotenv()
 app.secret_key = os.getenv("SECRET_KEY", "ella-secret-key")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////opt/render/project/src/users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # In-memory SQLite
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app, supports_credentials=True)
 
@@ -22,11 +22,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 db = SQLAlchemy(app)
 
-# Initialize Chroma for persistent conversation history
-chroma_client = chromadb.PersistentClient(path="/opt/render/project/src/chroma_db")
+# Initialize Chroma for in-memory conversation history
+chroma_client = chromadb.EphemeralClient()  # In-memory Chroma
 collection = chroma_client.get_or_create_collection(
     name="ella_conversations",
-    embedding_function=None  # We'll use SentenceTransformer manually
+    embedding_function=None
 )
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -114,11 +114,9 @@ def whoami():
 def get_history():
     try:
         user_id = current_user.id
-        query_text = request.args.get("query", "")  # Optional query for semantic search
+        query_text = request.args.get("query", "")
         if query_text:
-            # Generate embedding for query
             query_embedding = embedding_model.encode([query_text])[0].tolist()
-            # Query Chroma for similar messages
             results = collection.query(
                 query_embeddings=[query_embedding],
                 n_results=5,
@@ -129,7 +127,6 @@ def get_history():
                 for doc, meta in zip(results["documents"][0], results["metadatas"][0])
             ]
         else:
-            # Get all messages for user (limited to 10 for performance)
             results = collection.get(
                 where={"user_id": user_id},
                 limit=10
@@ -147,11 +144,10 @@ def ask():
     try:
         data = request.get_json()
         prompt = data.get("prompt", "")
-        history = data.get("history", [])
         user_id = data.get("user_id", current_user.id if current_user.is_authenticated else "default")
         timestamp = data.get("timestamp", datetime.utcnow().isoformat())
 
-        # Update in-memory session (optional, for real-time interaction)
+        # Update in-memory session
         if user_id not in user_sessions:
             user_sessions[user_id] = []
         user_sessions[user_id].append({"text": prompt, "sender": "user", "timestamp": timestamp})
@@ -177,7 +173,7 @@ def ask():
             }
         ]
 
-        # Fetch relevant history from Chroma for context
+        # Fetch relevant history from Chroma
         if prompt:
             prompt_embedding = embedding_model.encode([prompt])[0].tolist()
             results = collection.query(
@@ -233,4 +229,5 @@ def serve_static(path):
     return send_from_directory('static', path)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.getenv("PORT", 10000))  # Render default port
+    app.run(host="0.0.0.0", port=port, debug=False)
