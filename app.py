@@ -6,42 +6,32 @@ import os
 import requests
 import bcrypt
 from dotenv import load_dotenv
-import chromadb
 from sentence_transformers import SentenceTransformer
 from datetime import datetime
 
 app = Flask(__name__)
 load_dotenv()
 app.secret_key = os.getenv("SECRET_KEY", "ella-secret-key")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # In-memory SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app, supports_credentials=True)
 
-# Initialize Flask-Login and SQLAlchemy
 login_manager = LoginManager()
 login_manager.init_app(app)
 db = SQLAlchemy(app)
 
-# Initialize Chroma for in-memory conversation history
-chroma_client = chromadb.EphemeralClient()  # In-memory Chroma
-collection = chroma_client.get_or_create_collection(
-    name="ella_conversations",
-    embedding_function=None
-)
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# User model for database
+# User model
 class UserDB(db.Model, UserMixin):
     id = db.Column(db.String(50), primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
-# Create database tables
 with app.app_context():
     db.create_all()
 
-# In-memory storage for real-time session (optional fallback)
 user_sessions = {}
 
 @login_manager.user_loader
@@ -109,36 +99,6 @@ def whoami():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route("/history", methods=["GET"])
-@login_required
-def get_history():
-    try:
-        user_id = current_user.id
-        query_text = request.args.get("query", "")
-        if query_text:
-            query_embedding = embedding_model.encode([query_text])[0].tolist()
-            results = collection.query(
-                query_embeddings=[query_embedding],
-                n_results=5,
-                where={"user_id": user_id}
-            )
-            history = [
-                {"text": doc, "sender": meta["sender"], "timestamp": meta["timestamp"]}
-                for doc, meta in zip(results["documents"][0], results["metadatas"][0])
-            ]
-        else:
-            results = collection.get(
-                where={"user_id": user_id},
-                limit=10
-            )
-            history = [
-                {"text": doc, "sender": meta["sender"], "timestamp": meta["timestamp"]}
-                for doc, meta in zip(results["documents"], results["metadatas"])
-            ]
-        return jsonify({"success": True, "history": history})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-
 @app.route("/ask", methods=["POST"])
 def ask():
     try:
@@ -147,25 +107,16 @@ def ask():
         user_id = data.get("user_id", current_user.id if current_user.is_authenticated else "default")
         timestamp = data.get("timestamp", datetime.utcnow().isoformat())
 
-        # Update in-memory session
+        # Store prompt in memory session
         if user_id not in user_sessions:
             user_sessions[user_id] = []
         user_sessions[user_id].append({"text": prompt, "sender": "user", "timestamp": timestamp})
 
-        # Generate embedding and store in Chroma
-        prompt_embedding = embedding_model.encode([prompt])[0].tolist()
-        collection.add(
-            documents=[prompt],
-            embeddings=[prompt_embedding],
-            metadatas=[{"user_id": user_id, "sender": "user", "timestamp": timestamp}],
-            ids=[f"{user_id}_{timestamp}"]
-        )
-
-        # Prepare messages for Groq
         headers = {
             "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
             "Content-Type": "application/json"
         }
+
         messages = [
             {
                 "role": "system",
@@ -173,16 +124,9 @@ def ask():
             }
         ]
 
-        # Fetch relevant history from Chroma
-        if prompt:
-            prompt_embedding = embedding_model.encode([prompt])[0].tolist()
-            results = collection.query(
-                query_embeddings=[prompt_embedding],
-                n_results=3,
-                where={"user_id": user_id}
-            )
-            for doc, meta in zip(results["documents"][0], results["metadatas"][0]):
-                messages.append({"role": "user" if meta["sender"] == "user" else "assistant", "content": doc})
+        # Use short in-memory history only if needed
+        for turn in user_sessions.get(user_id, [])[-3:]:
+            messages.append({"role": "user" if turn["sender"] == "user" else "assistant", "content": turn["text"]})
 
         messages.append({"role": "user", "content": prompt})
 
@@ -195,20 +139,9 @@ def ask():
         response.raise_for_status()
         reply = response.json()["choices"][0]["message"]["content"]
 
-        # Store Ella's response in Chroma
-        reply_embedding = embedding_model.encode([reply])[0].tolist()
-        collection.add(
-            documents=[reply],
-            embeddings=[reply_embedding],
-            metadatas=[{"user_id": user_id, "sender": "bot", "timestamp": datetime.utcnow().isoformat()}],
-            ids=[f"{user_id}_{datetime.utcnow().isoformat()}"]
-        )
-
-        # Update in-memory session
         user_sessions[user_id].append({"text": reply, "sender": "bot", "timestamp": datetime.utcnow().isoformat()})
 
         return jsonify({"response": reply})
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -217,7 +150,6 @@ def ask():
 def clear():
     try:
         user_id = current_user.id
-        collection.delete(where={"user_id": user_id})
         if user_id in user_sessions:
             del user_sessions[user_id]
         return jsonify({"status": "Chat history cleared"})
@@ -229,5 +161,5 @@ def serve_static(path):
     return send_from_directory('static', path)
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 10000))  # Render default port
+    port = int(os.getenv("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
