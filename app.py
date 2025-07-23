@@ -6,7 +6,7 @@ import os
 import requests
 import bcrypt
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
+
 from datetime import datetime
 
 app = Flask(__name__)
