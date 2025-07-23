@@ -31,20 +31,23 @@
         radial-gradient(circle at bottom right, #2b1648 0%, transparent 50%);
     }
 
-    /* Login Section */
-    #login-box {
+    /* Auth Container (Login/Sign-Up) */
+    #auth-container {
       width: 100%;
       max-width: 400px;
       background: rgba(18, 18, 39, 0.9);
       border-radius: 12px;
       padding: 1rem;
       margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    #login-box, #signup-box {
       display: flex;
       flex-wrap: wrap;
       gap: 0.8rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
-    #login-box input {
+    #signup-box { display: none; } /* Hidden by default */
+    #auth-container input {
       flex: 1;
       min-width: 120px;
       border-radius: 20px;
@@ -56,15 +59,15 @@
       background: #1c1c27;
       transition: border-color 0.3s ease;
     }
-    #login-box input:focus {
+    #auth-container input:focus {
       border-color: #00ff99;
       box-shadow: 0 0 8px rgba(0, 204, 136, 0.3);
     }
-    #login-box input::placeholder {
+    #auth-container input::placeholder {
       color: #b0c4ff;
       font-style: italic;
     }
-    #login-box button {
+    #auth-container button {
       background: #00cc88;
       color: #ffffff;
       font-weight: 600;
@@ -76,15 +79,33 @@
       box-shadow: 0 2px 10px rgba(0, 204, 136, 0.3);
       transition: all 0.3s ease;
     }
-    #login-box button:hover, #login-box button:focus {
+    #auth-container button:hover, #auth-container button:focus {
       background: #00b377;
       box-shadow: 0 4px 15px rgba(0, 204, 136, 0.5);
       outline: none;
     }
-    #login-box button:disabled {
+    #auth-container button:disabled {
       background: #005522;
       cursor: not-allowed;
       box-shadow: none;
+    }
+    .toggle-auth {
+      background: transparent;
+      border: none;
+      color: #00cc88;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: underline;
+      align-self: center;
+      transition: color 0.3s ease;
+      margin-top: 0.5rem;
+      width: 100%;
+      text-align: center;
+    }
+    .toggle-auth:hover, .toggle-auth:focus {
+      color: #00b377;
+      outline: none;
     }
 
     /* Header */
@@ -314,8 +335,8 @@
       header { font-size: 2rem; }
       #chatbot { height: 400px; }
       #user-input, #send-btn { font-size: 0.95rem; }
-      #login-box { padding: 0.8rem; }
-      #login-box input, #login-box button { font-size: 0.85rem; }
+      #auth-container { padding: 0.8rem; }
+      #auth-container input, #auth-container button { font-size: 0.85rem; }
     }
     @media (max-width: 480px) {
       header { font-size: 1.8rem; }
@@ -323,17 +344,28 @@
       #chatbot { height: 350px; }
       #input-area { flex-direction: column; }
       #user-input, #send-btn { width: 100%; }
-      #login-box { flex-direction: column; }
-      #login-box input, #login-box button { width: 100%; min-width: auto; }
+      #login-box, #signup-box { flex-direction: column; }
+      #auth-container input, #auth-container button { width: 100%; min-width: auto; }
     }
   </style>
 </head>
 <body>
-  <!-- Login Section -->
-  <div id="login-box" aria-label="Login to Ella AI">
-    <input type="email" id="email" placeholder="Email" aria-label="Enter your email" />
-    <input type="password" id="password" placeholder="Password" aria-label="Enter your password" />
-    <button onclick="login()" aria-label="Login">Login</button>
+  <!-- Auth Container (Login/Sign-Up) -->
+  <div id="auth-container" aria-label="User Authentication">
+    <div id="login-box" aria-label="Login to Ella AI">
+      <input type="email" id="email" placeholder="Email" aria-label="Enter your email" />
+      <input type="password" id="password" placeholder="Password" aria-label="Enter your password" />
+      <button onclick="login()" aria-label="Login">Login</button>
+    </div>
+    <div id="signup-box" aria-label="Sign Up for Ella AI">
+      <input type="email" id="signup-email" placeholder="Email" aria-label="Enter your email for sign-up" />
+      <input type="password" id="signup-password" placeholder="Password" aria-label="Enter your password for sign-up" />
+      <input type="password" id="confirm-password" placeholder="Confirm Password" aria-label="Confirm your password" />
+      <button onclick="signup()" aria-label="Sign Up">Sign Up</button>
+    </div>
+    <button class="toggle-auth" onclick="toggleAuthMode()" id="toggle-auth">
+      Need an account? Sign Up
+    </button>
   </div>
 
   <header>Ella AI</header>
@@ -401,6 +433,22 @@
       return `${h}:${m} ${ampm}`;
     }
 
+    // Toggle Login/Sign-Up Forms
+    function toggleAuthMode() {
+      const loginBox = document.getElementById("login-box");
+      const signupBox = document.getElementById("signup-box");
+      const toggleBtn = document.getElementById("toggle-auth");
+      if (loginBox.style.display !== "none") {
+        loginBox.style.display = "none";
+        signupBox.style.display = "flex";
+        toggleBtn.textContent = "Already have an account? Login";
+      } else {
+        loginBox.style.display = "flex";
+        signupBox.style.display = "none";
+        toggleBtn.textContent = "Need an account? Sign Up";
+      }
+    }
+
     // Login Functionality
     async function login() {
       const email = document.getElementById("email").value;
@@ -410,7 +458,7 @@
         return;
       }
       try {
-        const res = await fetch('/login', {
+        const res = await fetch('https://ella-backend-uqu5.onrender.com/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -419,14 +467,47 @@
         const data = await res.json();
         if (res.ok) {
           alert("Logged in!");
-          // Optional: Redirect to a dashboard or hide login form
-          // document.getElementById("login-box").style.display = "none";
-          // window.location.href = '/dashboard';
+          // Optional: Hide auth container or redirect
+          // document.getElementById("auth-container").style.display = "none";
         } else {
           alert(data.message || "Login failed");
         }
       } catch (error) {
         alert("Error: Could not connect to server");
+        console.error(error);
+      }
+    }
+
+    // Sign-Up Functionality
+    async function signup() {
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      if (!email || !password || !confirmPassword) {
+        alert("Please fill in all fields");
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+      try {
+        const res = await fetch('https://ella-backend-uqu5.onrender.com/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Sign-up successful! Please log in.");
+          toggleAuthMode(); // Switch to login form
+        } else {
+          alert(data.message || "Sign-up failed");
+        }
+      } catch (error) {
+        alert("Error: Could not connect to server");
+        console.error(error);
       }
     }
 
