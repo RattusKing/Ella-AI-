@@ -31,6 +31,62 @@
         radial-gradient(circle at bottom right, #2b1648 0%, transparent 50%);
     }
 
+    /* Login Section */
+    #login-box {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(18, 18, 39, 0.9);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    #login-box input {
+      flex: 1;
+      min-width: 120px;
+      border-radius: 20px;
+      border: 1px solid #00cc88;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      outline: none;
+      color: #ffffff;
+      background: #1c1c27;
+      transition: border-color 0.3s ease;
+    }
+    #login-box input:focus {
+      border-color: #00ff99;
+      box-shadow: 0 0 8px rgba(0, 204, 136, 0.3);
+    }
+    #login-box input::placeholder {
+      color: #b0c4ff;
+      font-style: italic;
+    }
+    #login-box button {
+      background: #00cc88;
+      color: #ffffff;
+      font-weight: 600;
+      border: none;
+      border-radius: 20px;
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 204, 136, 0.3);
+      transition: all 0.3s ease;
+    }
+    #login-box button:hover, #login-box button:focus {
+      background: #00b377;
+      box-shadow: 0 4px 15px rgba(0, 204, 136, 0.5);
+      outline: none;
+    }
+    #login-box button:disabled {
+      background: #005522;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
     /* Header */
     header {
       font-family: 'Orbitron', sans-serif;
@@ -258,6 +314,8 @@
       header { font-size: 2rem; }
       #chatbot { height: 400px; }
       #user-input, #send-btn { font-size: 0.95rem; }
+      #login-box { padding: 0.8rem; }
+      #login-box input, #login-box button { font-size: 0.85rem; }
     }
     @media (max-width: 480px) {
       header { font-size: 1.8rem; }
@@ -265,10 +323,19 @@
       #chatbot { height: 350px; }
       #input-area { flex-direction: column; }
       #user-input, #send-btn { width: 100%; }
+      #login-box { flex-direction: column; }
+      #login-box input, #login-box button { width: 100%; min-width: auto; }
     }
   </style>
 </head>
 <body>
+  <!-- Login Section -->
+  <div id="login-box" aria-label="Login to Ella AI">
+    <input type="email" id="email" placeholder="Email" aria-label="Enter your email" />
+    <input type="password" id="password" placeholder="Password" aria-label="Enter your password" />
+    <button onclick="login()" aria-label="Login">Login</button>
+  </div>
+
   <header>Ella AI</header>
   <div class="slogan">Your Enterprise Fitness & Wellness Companion</div>
   <main>
@@ -332,6 +399,35 @@
       const m = date.getMinutes().toString().padStart(2, '0');
       const ampm = date.getHours() >= 12 ? 'pm' : 'am';
       return `${h}:${m} ${ampm}`;
+    }
+
+    // Login Functionality
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      if (!email || !password) {
+        alert("Please fill in both fields");
+        return;
+      }
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Logged in!");
+          // Optional: Redirect to a dashboard or hide login form
+          // document.getElementById("login-box").style.display = "none";
+          // window.location.href = '/dashboard';
+        } else {
+          alert(data.message || "Login failed");
+        }
+      } catch (error) {
+        alert("Error: Could not connect to server");
+      }
     }
 
     // Load FAQs
