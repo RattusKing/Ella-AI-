@@ -4,3 +4,4 @@ groq
 gunicorn
 requests
 flask-login
+bcrypt
