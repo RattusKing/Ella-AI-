@@ -15,15 +15,17 @@ CORS(app, supports_credentials=True)  # Enable credentials for session cookies
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# In-memory user database with hashed passwords
+# In-memory user database with hashed passwords and usernames
 users = {
     "test@example.com": {
         "password": bcrypt.hashpw("pass123".encode(), bcrypt.gensalt()),
-        "id": "user1"
+        "id": "user1",
+        "username": "TestUser"
     },
     "levi@ella.com": {
         "password": bcrypt.hashpw("founder".encode(), bcrypt.gensalt()),
-        "id": "levi1"
+        "id": "levi1",
+        "username": "Levi"
     }
 }
 
@@ -56,7 +58,7 @@ def login():
         if user and bcrypt.checkpw(password, user["password"]):
             user_obj = User(user["id"])
             login_user(user_obj)
-            return jsonify({"success": True})
+            return jsonify({"success": True, "username": user["username"]})
         return jsonify({"success": False, "message": "Invalid email or password"}), 401
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -67,15 +69,18 @@ def signup():
         data = request.get_json()
         email = data.get("email")
         password = data.get("password").encode()
-        if not email or not password:
-            return jsonify({"success": False, "message": "Email and password are required"}), 400
+        username = data.get("username")
+        if not email or not password or not username:
+            return jsonify({"success": False, "message": "Email, password, and username are required"}), 400
         if email in users:
             return jsonify({"success": False, "message": "Email already registered"}), 400
-        # Generate unique user ID
+        if any(u["username"] == username for u in users.values()):
+            return jsonify({"success": False, "message": "Username already taken"}), 400
         user_id = f"user_{len(users) + 1}"
         users[email] = {
             "password": bcrypt.hashpw(password, bcrypt.gensalt()),
-            "id": user_id
+            "id": user_id,
+            "username": username
         }
         return jsonify({"success": True, "message": "Sign-up successful"})
     except Exception as e:
@@ -94,7 +99,8 @@ def logout():
 @login_required
 def whoami():
     try:
-        return jsonify({"success": True, "user": current_user.id})
+        user = next(u for u in users.values() if u["id"] == current_user.id)
+        return jsonify({"success": True, "user_id": current_user.id, "username": user["username"]})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
