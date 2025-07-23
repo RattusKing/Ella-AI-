@@ -6,3 +6,6 @@ requests
 flask-login
 bcrypt
 python-dotenv
+flask-sqlalchemy
+chromadb
+sentence-transformers
