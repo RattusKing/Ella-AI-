@@ -61,7 +61,27 @@ def login():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route("/logout", methods=["POST"])  # Changed to POST for consistency with frontend
+@app.route("/signup", methods=["POST"])
+def signup():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password").encode()
+        if not email or not password:
+            return jsonify({"success": False, "message": "Email and password are required"}), 400
+        if email in users:
+            return jsonify({"success": False, "message": "Email already registered"}), 400
+        # Generate unique user ID
+        user_id = f"user_{len(users) + 1}"
+        users[email] = {
+            "password": bcrypt.hashpw(password, bcrypt.gensalt()),
+            "id": user_id
+        }
+        return jsonify({"success": True, "message": "Sign-up successful"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/logout", methods=["POST"])
 @login_required
 def logout():
     try:
