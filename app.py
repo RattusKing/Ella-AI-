@@ -20,7 +20,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 db = SQLAlchemy(app)
 
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+
 
 # User model
 class UserDB(db.Model, UserMixin):
