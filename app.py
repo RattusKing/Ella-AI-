@@ -1,48 +1,52 @@
 from flask import Flask, request, jsonify, session, send_from_directory
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 import os
 import requests
 import bcrypt
 from dotenv import load_dotenv
+import chromadb
+from sentence_transformers import SentenceTransformer
+from datetime import datetime
 
 app = Flask(__name__)
 load_dotenv()
-app.secret_key = os.getenv("SECRET_KEY", "ella-secret-key")  # Fallback for local testing
-CORS(app, supports_credentials=True)  # Enable credentials for session cookies
+app.secret_key = os.getenv("SECRET_KEY", "ella-secret-key")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////opt/render/project/src/users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+CORS(app, supports_credentials=True)
 
-# Initialize Flask-Login
+# Initialize Flask-Login and SQLAlchemy
 login_manager = LoginManager()
 login_manager.init_app(app)
+db = SQLAlchemy(app)
 
-# In-memory user database with hashed passwords and usernames
-users = {
-    "test@example.com": {
-        "password": bcrypt.hashpw("pass123".encode(), bcrypt.gensalt()),
-        "id": "user1",
-        "username": "TestUser"
-    },
-    "levi@ella.com": {
-        "password": bcrypt.hashpw("founder".encode(), bcrypt.gensalt()),
-        "id": "levi1",
-        "username": "Levi"
-    }
-}
+# Initialize Chroma for persistent conversation history
+chroma_client = chromadb.PersistentClient(path="/opt/render/project/src/chroma_db")
+collection = chroma_client.get_or_create_collection(
+    name="ella_conversations",
+    embedding_function=None  # We'll use SentenceTransformer manually
+)
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# User class for Flask-Login
-class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
+# User model for database
+class UserDB(db.Model, UserMixin):
+    id = db.Column(db.String(50), primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+
+# Create database tables
+with app.app_context():
+    db.create_all()
+
+# In-memory storage for real-time session (optional fallback)
+user_sessions = {}
 
 @login_manager.user_loader
 def load_user(user_id):
-    for user in users.values():
-        if user["id"] == user_id:
-            return User(user_id)
-    return None
-
-# In-memory storage for conversation history (resets on server restart)
-user_sessions = {}  # {user_id: [{text: str, sender: str, timestamp: str}]}
+    return UserDB.query.get(user_id)
 
 @app.route("/", methods=["GET"])
 def home():
@@ -54,11 +58,10 @@ def login():
         data = request.get_json()
         email = data.get("email")
         password = data.get("password").encode()
-        user = users.get(email)
-        if user and bcrypt.checkpw(password, user["password"]):
-            user_obj = User(user["id"])
-            login_user(user_obj)
-            return jsonify({"success": True, "username": user["username"]})
+        user = UserDB.query.filter_by(email=email).first()
+        if user and bcrypt.checkpw(password, user.password.encode()):
+            login_user(user)
+            return jsonify({"success": True, "username": user.username})
         return jsonify({"success": False, "message": "Invalid email or password"}), 401
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -72,16 +75,19 @@ def signup():
         username = data.get("username")
         if not email or not password or not username:
             return jsonify({"success": False, "message": "Email, password, and username are required"}), 400
-        if email in users:
+        if UserDB.query.filter_by(email=email).first():
             return jsonify({"success": False, "message": "Email already registered"}), 400
-        if any(u["username"] == username for u in users.values()):
+        if UserDB.query.filter_by(username=username).first():
             return jsonify({"success": False, "message": "Username already taken"}), 400
-        user_id = f"user_{len(users) + 1}"
-        users[email] = {
-            "password": bcrypt.hashpw(password, bcrypt.gensalt()),
-            "id": user_id,
-            "username": username
-        }
+        user_id = f"user_{UserDB.query.count() + 1}"
+        user = UserDB(
+            id=user_id,
+            email=email,
+            username=username,
+            password=bcrypt.hashpw(password, bcrypt.gensalt()).decode()
+        )
+        db.session.add(user)
+        db.session.commit()
         return jsonify({"success": True, "message": "Sign-up successful"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -99,8 +105,40 @@ def logout():
 @login_required
 def whoami():
     try:
-        user = next(u for u in users.values() if u["id"] == current_user.id)
-        return jsonify({"success": True, "user_id": current_user.id, "username": user["username"]})
+        return jsonify({"success": True, "user_id": current_user.id, "username": current_user.username})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/history", methods=["GET"])
+@login_required
+def get_history():
+    try:
+        user_id = current_user.id
+        query_text = request.args.get("query", "")  # Optional query for semantic search
+        if query_text:
+            # Generate embedding for query
+            query_embedding = embedding_model.encode([query_text])[0].tolist()
+            # Query Chroma for similar messages
+            results = collection.query(
+                query_embeddings=[query_embedding],
+                n_results=5,
+                where={"user_id": user_id}
+            )
+            history = [
+                {"text": doc, "sender": meta["sender"], "timestamp": meta["timestamp"]}
+                for doc, meta in zip(results["documents"][0], results["metadatas"][0])
+            ]
+        else:
+            # Get all messages for user (limited to 10 for performance)
+            results = collection.get(
+                where={"user_id": user_id},
+                limit=10
+            )
+            history = [
+                {"text": doc, "sender": meta["sender"], "timestamp": meta["timestamp"]}
+                for doc, meta in zip(results["documents"], results["metadatas"])
+            ]
+        return jsonify({"success": True, "history": history})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
@@ -110,13 +148,22 @@ def ask():
         data = request.get_json()
         prompt = data.get("prompt", "")
         history = data.get("history", [])
-        user_id = data.get("user_id", "default")
+        user_id = data.get("user_id", current_user.id if current_user.is_authenticated else "default")
+        timestamp = data.get("timestamp", datetime.utcnow().isoformat())
 
-        # Load or initialize session history
+        # Update in-memory session (optional, for real-time interaction)
         if user_id not in user_sessions:
-            user_sessions[user_id] = history
-        else:
-            user_sessions[user_id] = history  # Update with frontend-provided history
+            user_sessions[user_id] = []
+        user_sessions[user_id].append({"text": prompt, "sender": "user", "timestamp": timestamp})
+
+        # Generate embedding and store in Chroma
+        prompt_embedding = embedding_model.encode([prompt])[0].tolist()
+        collection.add(
+            documents=[prompt],
+            embeddings=[prompt_embedding],
+            metadatas=[{"user_id": user_id, "sender": "user", "timestamp": timestamp}],
+            ids=[f"{user_id}_{timestamp}"]
+        )
 
         # Prepare messages for Groq
         headers = {
@@ -126,12 +173,21 @@ def ask():
         messages = [
             {
                 "role": "system",
-                "content": "You are Ella, a bubbly, sweet, yet firm and nice AI health and wellness companion designed to inspire and support users in fitness, nutrition, and mental wellness. Your expertise includes creating personalized workout plans, offering evidence-based nutrition advice, and providing motivational mental wellness tips. Use a warm, encouraging tone with a touch of firmness to keep users on track, always ending with a positive nudge or question to keep them engaged. \n\nGuidelines:\n1. **Focus on Health and Wellness**: Respond only to queries about fitness (e.g., workouts, gym schedules), nutrition (e.g., meal plans, dietary tips), and mental wellness (e.g., stress relief, mindfulness). If asked about unrelated topics (e.g., hotels), redirect gently to health and wellness (e.g., 'Let’s focus on your wellness journey—how about a quick workout tip?').\n2. **Personalization**: Use conversation history to tailor responses. If users provide goals or preferences (e.g., 'I’m a beginner'), customize advice accordingly.\n3. **Motivational Tone**: Keep answers concise (2-3 sentences), uplifting, and firm when needed (e.g., 'You’ve got this, but consistency is key!'). Always end with a question or encouragement to keep the user engaged.\n4. **Evidence-Based Advice**: Provide science-backed fitness and nutrition tips, avoiding medical claims unless asked, and suggest consulting professionals for health concerns.\n5. **Error Handling**: If data is unavailable, respond helpfully (e.g., 'I need a bit more info to tailor your plan—what’s your fitness goal?').\n\nExample Responses:\n- User: 'Show gym schedule' → 'Let’s get moving! Try a 10 AM yoga class or a 6 PM HIIT session. Which one fits your vibe today?'\n- User: 'Give me a workout tip' → 'Power up with a 3x10 bodyweight squat set to build strength. Stay consistent—you’re stronger than you think! Ready for more?'\n- User: 'What’s a hotel booking?' → 'Let’s focus on your wellness! How about a quick stretch routine to boost your energy? What’s your goal today?'"
+                "content": "You are Ella, a bubbly, sweet, yet firm and nice AI health and wellness companion designed to inspire and support users in fitness, nutrition, and mental wellness. Your expertise includes creating personalized workout plans, offering evidence-based nutrition advice, and providing motivational mental wellness tips. Use a warm, encouraging tone with a touch of firmness to keep users on track, always ending with a positive nudge or question to keep them engaged. \n\nGuidelines:\n1. **Focus on Health and Wellness**: Respond only to queries about fitness, nutrition, and mental wellness. If asked about unrelated topics, redirect gently to health and wellness.\n2. **Personalization**: Use conversation history to tailor responses. If users provide goals or preferences, customize advice accordingly.\n3. **Motivational Tone**: Keep answers concise (2-3 sentences), uplifting, and firm when needed. Always end with a question or encouragement.\n4. **Evidence-Based Advice**: Provide science-backed tips, avoiding medical claims unless asked, and suggest consulting professionals for health concerns.\n5. **Error Handling**: If data is unavailable, respond helpfully (e.g., 'I need a bit more info—what’s your fitness goal?')."
             }
-        ] + [
-            {"role": "user" if msg["sender"] == "user" else "assistant", "content": msg["text"]}
-            for msg in user_sessions[user_id][-5:]  # Limit to last 5 messages to avoid token overflow
         ]
+
+        # Fetch relevant history from Chroma for context
+        if prompt:
+            prompt_embedding = embedding_model.encode([prompt])[0].tolist()
+            results = collection.query(
+                query_embeddings=[prompt_embedding],
+                n_results=3,
+                where={"user_id": user_id}
+            )
+            for doc, meta in zip(results["documents"][0], results["metadatas"][0]):
+                messages.append({"role": "user" if meta["sender"] == "user" else "assistant", "content": doc})
+
         messages.append({"role": "user", "content": prompt})
 
         payload = {
@@ -140,14 +196,20 @@ def ask():
         }
 
         response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
-        response.raise_for_status()  # Raise exception for non-200 responses
-        result = response.json()
+        response.raise_for_status()
+        reply = response.json()["choices"][0]["message"]["content"]
 
-        reply = result["choices"][0]["message"]["content"]
+        # Store Ella's response in Chroma
+        reply_embedding = embedding_model.encode([reply])[0].tolist()
+        collection.add(
+            documents=[reply],
+            embeddings=[reply_embedding],
+            metadatas=[{"user_id": user_id, "sender": "bot", "timestamp": datetime.utcnow().isoformat()}],
+            ids=[f"{user_id}_{datetime.utcnow().isoformat()}"]
+        )
 
-        # Update session history
-        user_sessions[user_id].append({"text": prompt, "sender": "user", "timestamp": data.get("timestamp", "")})
-        user_sessions[user_id].append({"text": reply, "sender": "bot", "timestamp": ""})
+        # Update in-memory session
+        user_sessions[user_id].append({"text": reply, "sender": "bot", "timestamp": datetime.utcnow().isoformat()})
 
         return jsonify({"response": reply})
 
@@ -155,17 +217,17 @@ def ask():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/clear", methods=["POST"])
+@login_required
 def clear():
     try:
-        data = request.get_json()
-        user_id = data.get("user_id", "default")
+        user_id = current_user.id
+        collection.delete(where={"user_id": user_id})
         if user_id in user_sessions:
             del user_sessions[user_id]
         return jsonify({"status": "Chat history cleared"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Serve static files (e.g., index.html)
 @app.route('/<path:path>')
 def serve_static(path):
     return send_from_directory('static', path)
