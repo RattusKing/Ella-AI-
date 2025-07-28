@@ -12,13 +12,19 @@ load_dotenv()
 
 # Configure secret key and CORS
 app.secret_key = os.getenv("SECRET_KEY", "ella-secret-key")
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["https://rattusking.github.io", "*"]}})
 
-# Configure logging for debugging
-logging.basicConfig(level=logging.INFO)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s:%(name)s: %(message)s',
+    handlers=[
+        logging.StreamHandler()  # Output to console/Render logs
+    ]
+)
 logger = logging.getLogger(__name__)
 
-# In-memory chat storage per user
+# In-memory chat storage
 user_sessions = {}
 
 @app.route("/", methods=["GET"])
@@ -30,19 +36,32 @@ def home():
 def ask():
     try:
         data = request.get_json()
+        if not data:
+            logger.error("No JSON data received in /ask request")
+            return jsonify({"error": "Invalid request: JSON data required"}), 400
+
         prompt = data.get("prompt", "")
         user_id = data.get("user_id", "default")
         timestamp = data.get("timestamp", datetime.utcnow().isoformat())
         logger.info(f"Received /ask request from user_id: {user_id}, prompt: {prompt}")
 
-        # Store prompt in memory session
+        if not prompt:
+            logger.warning("Empty prompt received")
+            return jsonify({"error": "Prompt is required"}), 400
+
+        # Store prompt in memory
         if user_id not in user_sessions:
             user_sessions[user_id] = []
         user_sessions[user_id].append({"text": prompt, "sender": "user", "timestamp": timestamp})
 
         # Prepare GROQ API request
+        groq_api_key = os.getenv("GROQ_API_KEY")
+        if not groq_api_key:
+            logger.error("GROQ_API_KEY not set")
+            return jsonify({"error": "Server configuration error: Missing API key"}), 500
+
         headers = {
-            "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+            "Authorization": f"Bearer {groq_api_key}",
             "Content-Type": "application/json"
         }
 
@@ -67,7 +86,7 @@ def ask():
             }
         ]
 
-        # Use short in-memory history (last 3 turns)
+        # Use last 3 turns of history
         for turn in user_sessions.get(user_id, [])[-3:]:
             messages.append({"role": "user" if turn["sender"] == "user" else "assistant", "content": turn["text"]})
 
@@ -79,7 +98,12 @@ def ask():
         }
 
         # Make GROQ API request
-        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=30  # Add timeout to prevent hanging
+        )
         response.raise_for_status()
         reply = response.json()["choices"][0]["message"]["content"]
         logger.info(f"GROQ API response received for user_id: {user_id}")
@@ -112,7 +136,7 @@ def clear():
 def history():
     try:
         query = request.args.get("query", "")
-        user_id = "default"  # Hardcoded for non-authenticated users
+        user_id = "default"
         logger.info(f"Fetching history for user_id: {user_id}, query: {query}")
         history = user_sessions.get(user_id, [])
         if query:
@@ -133,5 +157,5 @@ def serve_static(path):
 
 if __name__ == "__main__":
     # For local development only
-    port = int(os.getenv("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
