@@ -132,7 +132,7 @@ def ask():
 
         payload = {
             "messages": messages,
-            "model":  "moonshotai/kimi-k2-instruct"
+            "model":  "llama3-70b-8192"
         }
 
         response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
