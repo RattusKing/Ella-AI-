@@ -20,20 +20,17 @@
     }
 
     body {
-      /* Dark background with subtle gradient to light blue */
-      background: linear-gradient(135deg, #000000 0%, #0A1A33 100%); /* #0A1A33 is a dark blue-black mix for smoothness */
-      /* Subtle geometric dot pattern using yellow */
-      background-image: radial-gradient(circle, rgba(255, 241, 27, 0.1) 2px, transparent 2px);
-      background-size: 20px 20px;
-      color: #16F1E4; /* Light blue for text */
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-      /* Subtle animation for pattern movement */
-      animation: shiftPattern 30s linear infinite;
-    }
+  background: linear-gradient(135deg, #000000 0%, #0A1A33 100%);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255, 241, 27, 0.1) 15px, rgba(255, 241, 27, 0.1) 16px);
+  background-size: cover;
+  color: #16F1E4;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  animation: shiftPattern 30s linear infinite;
+}
 
     /* Animation for subtle background movement */
     @keyframes shiftPattern {
