@@ -20,27 +20,25 @@
     }
 
     body {
-      /* Gradient background with your colors */
-      background: linear-gradient(135deg, #1C2FFF 0%, #2E1033 100%);
-      /* Subtle geometric pattern overlay using CSS */
-      background-image: 
-        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(22, 241, 228, 0.1) 10px, rgba(22, 241, 228, 0.1) 20px),
-        repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(33, 227, 93, 0.1) 10px, rgba(33, 227, 93, 0.1) 20px);
-      background-size: cover;
-      color: #e0e0e0;
+      /* Dark background with subtle gradient to light blue */
+      background: linear-gradient(135deg, #000000 0%, #0A1A33 100%); /* #0A1A33 is a dark blue-black mix for smoothness */
+      /* Subtle geometric dot pattern using yellow */
+      background-image: radial-gradient(circle, rgba(255, 241, 27, 0.1) 2px, transparent 2px);
+      background-size: 20px 20px;
+      color: #16F1E4; /* Light blue for text */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 2rem 1rem;
-      /* Optional: Subtle animation for a dynamic feel */
-      animation: shiftPattern 20s linear infinite;
+      /* Subtle animation for pattern movement */
+      animation: shiftPattern 30s linear infinite;
     }
 
     /* Animation for subtle background movement */
     @keyframes shiftPattern {
       0% { background-position: 0 0; }
-      100% { background-position: 40px 40px; }
+      100% { background-position: 20px 20px; }
     }
 
     /* Header */
@@ -51,8 +49,8 @@
       letter-spacing: 0.1em;
       margin-bottom: 0.5rem;
       text-transform: uppercase;
-      color: #FFF11B; /* Changed to one of your colors for vibrancy */
-      text-shadow: 0 0 10px rgba(255, 241, 27, 0.5);
+      color: #FFF11B; /* Yellow for header */
+      text-shadow: 0 0 8px rgba(255, 241, 27, 0.4);
       user-select: none;
     }
 
@@ -61,7 +59,7 @@
       font-size: 1.2rem;
       font-weight: 400;
       margin-bottom: 2rem;
-      color: #16F1E4; /* Updated to match your color scheme */
+      color: #16F1E4; /* Light blue for slogan */
       text-shadow: 0 0 5px rgba(22, 241, 228, 0.3);
     }
 
@@ -69,9 +67,9 @@
     main {
       width: 100%;
       max-width: 1024px;
-      background: rgba(18, 18, 39, 0.9);
+      background: rgba(0, 0, 0, 0.85); /* Black with transparency */
       border-radius: 16px;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
       padding: 2.5rem;
       display: flex;
       flex-direction: column;
@@ -80,23 +78,23 @@
 
     /* Section Styling */
     section {
-      background: #1c1c27;
+      background: #1c1c27; /* Kept for contrast, can change to #000000 if preferred */
       border-radius: 12px;
       padding: 2rem;
-      box-shadow: inset 0 0 10px rgba(33, 227, 93, 0.2); /* Updated to use #21E35D */
+      box-shadow: inset 0 0 10px rgba(22, 241, 228, 0.2); /* Light blue shadow */
     }
 
     section h2 {
       font-family: 'Orbitron', sans-serif;
       font-size: 1.8rem;
       margin-bottom: 1.2rem;
-      color: #21E35D; /* Updated to your green */
-      text-shadow: 0 0 10px rgba(33, 227, 93, 0.5);
+      color: #FFF11B; /* Yellow for headings */
+      text-shadow: 0 0 8px rgba(255, 241, 27, 0.4);
     }
 
     /* Chatbot Container */
     #chatbot {
-      background: #101017;
+      background: #000000; /* Black for chatbot */
       border-radius: 12px;
       height: 500px;
       overflow-y: auto;
@@ -107,9 +105,9 @@
       font-family: 'Inter', monospace;
       font-size: 1rem;
       line-height: 1.6;
-      color: #e0e0e0;
+      color: #16F1E4; /* Light blue for text */
       scrollbar-width: thin;
-      scrollbar-color: #16F1E4 #1c1c27; /* Updated to use your teal */
+      scrollbar-color: #FFF11B #000000; /* Yellow scrollbar on black */
     }
 
     #chatbot::-webkit-scrollbar {
@@ -117,12 +115,12 @@
     }
 
     #chatbot::-webkit-scrollbar-thumb {
-      background: #16F1E4; /* Updated to teal */
+      background: #FFF11B; /* Yellow scrollbar */
       border-radius: 4px;
     }
 
     #chatbot::-webkit-scrollbar-track {
-      background: #1c1c27;
+      background: #000000; /* Black track */
     }
 
     /* Message Styling */
@@ -137,15 +135,15 @@
 
     .user-message {
       align-self: flex-end;
-      background: rgba(22, 241, 228, 0.33); /* Updated to use #16F1E4 with transparency */
-      color: #ffffff;
+      background: rgba(22, 241, 228, 0.3); /* Light blue with transparency */
+      color: #FFF11B; /* Yellow for user message text */
       text-align: right;
     }
 
     .bot-message {
       align-self: flex-start;
-      background: rgba(46, 16, 51, 0.8); /* Updated to use #2E1033 with transparency */
-      color: #e0e0e0;
+      background: rgba(0, 0, 0, 0.7); /* Black with transparency */
+      color: #16F1E4; /* Light blue for bot message text */
       text-align: left;
     }
 
@@ -153,7 +151,7 @@
       font-size: 0.75rem;
       opacity: 0.6;
       margin-top: 0.4rem;
-      color: #FFF11B; /* Updated to yellow for contrast */
+      color: #FFF11B; /* Yellow for timestamp */
     }
 
     /* Typing Indicator */
@@ -166,7 +164,7 @@
     .typing-indicator > div {
       width: 8px;
       height: 8px;
-      background: #21E35D; /* Updated to green */
+      background: #16F1E4; /* Light blue for typing dots */
       border-radius: 50%;
       animation: blink 1.2s infinite ease-in-out;
     }
@@ -194,28 +192,28 @@
     #user-input {
       flex-grow: 1;
       border-radius: 30px;
-      border: 1px solid #16F1E4; /* Updated to teal */
+      border: 1px solid #16F1E4; /* Light blue border */
       padding: 0.9rem 1.5rem;
       font-size: 1rem;
       outline: none;
-      color: #ffffff;
-      background: #1c1c27;
+      color: #FFF11B; /* Yellow for input text */
+      background: #000000; /* Black background */
       transition: border-color 0.3s ease;
     }
 
     #user-input:focus {
-      border-color: #21E35D; /* Updated to green */
-      box-shadow: 0 0 8px rgba(33, 227, 93, 0.3);
+      border-color: #FFF11B; /* Yellow on focus */
+      box-shadow: 0 0 8px rgba(255, 241, 27, 0.3);
     }
 
     #user-input::placeholder {
-      color: #FFF11B; /* Updated to yellow */
+      color: #16F1E4; /* Light blue for placeholder */
       font-style: italic;
     }
 
     #send-btn {
-      background: #16F1E4; /* Updated to teal */
-      color: #2E1033; /* Dark purple for contrast */
+      background: #16F1E4; /* Light blue button */
+      color: #000000; /* Black text for contrast */
       font-weight: 600;
       border: none;
       border-radius: 30px;
@@ -227,13 +225,14 @@
     }
 
     #send-btn:hover, #send-btn:focus {
-      background: #21E35D; /* Updated to green */
-      box-shadow: 0 4px 15px rgba(33, 227, 93, 0.5);
+      background: #FFF11B; /* Yellow on hover */
+      color: #000000; /* Black text */
+      box-shadow: 0 4px 15px rgba(255, 241, 27, 0.5);
       outline: none;
     }
 
     #send-btn:disabled {
-      background: #005522;
+      background: #333333; /* Darker gray for disabled state */
       cursor: not-allowed;
       box-shadow: none;
     }
@@ -243,7 +242,7 @@
       margin-top: 0.8rem;
       background: transparent;
       border: none;
-      color: #FFF11B; /* Updated to yellow */
+      color: #FFF11B; /* Yellow for clear button */
       font-weight: 600;
       font-size: 0.9rem;
       cursor: pointer;
@@ -253,7 +252,7 @@
     }
 
     #clear-chat:hover, #clear-chat:focus {
-      color: #16F1E4; /* Updated to teal */
+      color: #16F1E4; /* Light blue on hover */
       outline: none;
     }
 
@@ -262,25 +261,25 @@
       max-height: 450px;
       overflow-y: auto;
       font-size: 1rem;
-      color: #e0e0e0;
+      color: #16F1E4; /* Light blue for FAQ text */
       padding-right: 0.5rem;
     }
 
     .faq-item {
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid #2a2a3b;
+      border-bottom: 1px solid #333333; /* Darker border for contrast */
       padding-bottom: 0.8rem;
     }
 
     .faq-question {
       font-weight: 600;
-      color: #21E35D; /* Updated to green */
+      color: #FFF11B; /* Yellow for FAQ questions */
       margin-bottom: 0.4rem;
     }
 
     .faq-answer {
       font-weight: 400;
-      color: #16F1E4; /* Updated to teal */
+      color: #16F1E4; /* Light blue for FAQ answers */
       line-height: 1.5;
     }
 
