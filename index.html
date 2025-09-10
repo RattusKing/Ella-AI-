@@ -10,7 +10,7 @@
   <title>Ella — Enterprise Fitness & Wellness </title>
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
-  <style>
+ <style>
     /* Reset and Base Styles */
     * {
       margin: 0;
@@ -18,15 +18,29 @@
       box-sizing: border-box;
       font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     body {
-      background: #1C2FFF;
+      /* Gradient background with your colors */
+      background: linear-gradient(135deg, #1C2FFF 0%, #2E1033 100%);
+      /* Subtle geometric pattern overlay using CSS */
+      background-image: 
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(22, 241, 228, 0.1) 10px, rgba(22, 241, 228, 0.1) 20px),
+        repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(33, 227, 93, 0.1) 10px, rgba(33, 227, 93, 0.1) 20px);
+      background-size: cover;
       color: #e0e0e0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 2rem 1rem;
-      
+      /* Optional: Subtle animation for a dynamic feel */
+      animation: shiftPattern 20s linear infinite;
+    }
+
+    /* Animation for subtle background movement */
+    @keyframes shiftPattern {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
     }
 
     /* Header */
@@ -37,17 +51,18 @@
       letter-spacing: 0.1em;
       margin-bottom: 0.5rem;
       text-transform: uppercase;
-      color: #00cc88;
-      text-shadow: 0 0 10px rgba(0, 204, 136, 0.5);
+      color: #FFF11B; /* Changed to one of your colors for vibrancy */
+      text-shadow: 0 0 10px rgba(255, 241, 27, 0.5);
       user-select: none;
     }
+
     .slogan {
       font-family: 'Inter', sans-serif;
       font-size: 1.2rem;
       font-weight: 400;
       margin-bottom: 2rem;
-      color: #b0c4ff;
-      text-shadow: 0 0 5px rgba(106, 132, 255, 0.3);
+      color: #16F1E4; /* Updated to match your color scheme */
+      text-shadow: 0 0 5px rgba(22, 241, 228, 0.3);
     }
 
     /* Main Container */
@@ -68,14 +83,15 @@
       background: #1c1c27;
       border-radius: 12px;
       padding: 2rem;
-      box-shadow: inset 0 0 10px rgba(0, 204, 136, 0.2);
+      box-shadow: inset 0 0 10px rgba(33, 227, 93, 0.2); /* Updated to use #21E35D */
     }
+
     section h2 {
       font-family: 'Orbitron', sans-serif;
       font-size: 1.8rem;
       margin-bottom: 1.2rem;
-      color: #00cc88;
-      text-shadow: 0 0 10px rgba(0, 204, 136, 0.5);
+      color: #21E35D; /* Updated to your green */
+      text-shadow: 0 0 10px rgba(33, 227, 93, 0.5);
     }
 
     /* Chatbot Container */
@@ -93,15 +109,18 @@
       line-height: 1.6;
       color: #e0e0e0;
       scrollbar-width: thin;
-      scrollbar-color: #00cc88 #1c1c27;
+      scrollbar-color: #16F1E4 #1c1c27; /* Updated to use your teal */
     }
+
     #chatbot::-webkit-scrollbar {
       width: 8px;
     }
+
     #chatbot::-webkit-scrollbar-thumb {
-      background: #00cc88;
+      background: #16F1E4; /* Updated to teal */
       border-radius: 4px;
     }
+
     #chatbot::-webkit-scrollbar-track {
       background: #1c1c27;
     }
@@ -115,23 +134,26 @@
       word-break: break-word;
       animation: fadeIn 0.3s ease;
     }
+
     .user-message {
       align-self: flex-end;
-      background: #00cc8855;
+      background: rgba(22, 241, 228, 0.33); /* Updated to use #16F1E4 with transparency */
       color: #ffffff;
       text-align: right;
     }
+
     .bot-message {
       align-self: flex-start;
-      background: #003322cc;
+      background: rgba(46, 16, 51, 0.8); /* Updated to use #2E1033 with transparency */
       color: #e0e0e0;
       text-align: left;
     }
+
     .timestamp {
       font-size: 0.75rem;
       opacity: 0.6;
       margin-top: 0.4rem;
-      color: #b0c4ff;
+      color: #FFF11B; /* Updated to yellow for contrast */
     }
 
     /* Typing Indicator */
@@ -140,13 +162,15 @@
       gap: 0.5rem;
       padding: 0.8rem 1.2rem;
     }
+
     .typing-indicator > div {
       width: 8px;
       height: 8px;
-      background: #00cc88;
+      background: #21E35D; /* Updated to green */
       border-radius: 50%;
       animation: blink 1.2s infinite ease-in-out;
     }
+
     .typing-indicator > div:nth-child(2) { animation-delay: 0.2s; }
     .typing-indicator > div:nth-child(3) { animation-delay: 0.4s; }
 
@@ -154,6 +178,7 @@
       0%, 80%, 100% { opacity: 0.3; }
       40% { opacity: 1; }
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -165,10 +190,11 @@
       display: flex;
       gap: 0.8rem;
     }
+
     #user-input {
       flex-grow: 1;
       border-radius: 30px;
-      border: 1px solid #00cc88;
+      border: 1px solid #16F1E4; /* Updated to teal */
       padding: 0.9rem 1.5rem;
       font-size: 1rem;
       outline: none;
@@ -176,31 +202,36 @@
       background: #1c1c27;
       transition: border-color 0.3s ease;
     }
+
     #user-input:focus {
-      border-color: #00ff99;
-      box-shadow: 0 0 8px rgba(0, 204, 136, 0.3);
+      border-color: #21E35D; /* Updated to green */
+      box-shadow: 0 0 8px rgba(33, 227, 93, 0.3);
     }
+
     #user-input::placeholder {
-      color: #b0c4ff;
+      color: #FFF11B; /* Updated to yellow */
       font-style: italic;
     }
+
     #send-btn {
-      background: #00cc88;
-      color: #ffffff;
+      background: #16F1E4; /* Updated to teal */
+      color: #2E1033; /* Dark purple for contrast */
       font-weight: 600;
       border: none;
       border-radius: 30px;
       padding: 0.9rem 2rem;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0, 204, 136, 0.3);
+      box-shadow: 0 2px 10px rgba(22, 241, 228, 0.3);
       transition: all 0.3s ease;
     }
+
     #send-btn:hover, #send-btn:focus {
-      background: #00b377;
-      box-shadow: 0 4px 15px rgba(0, 204, 136, 0.5);
+      background: #21E35D; /* Updated to green */
+      box-shadow: 0 4px 15px rgba(33, 227, 93, 0.5);
       outline: none;
     }
+
     #send-btn:disabled {
       background: #005522;
       cursor: not-allowed;
@@ -212,7 +243,7 @@
       margin-top: 0.8rem;
       background: transparent;
       border: none;
-      color: #00cc88;
+      color: #FFF11B; /* Updated to yellow */
       font-weight: 600;
       font-size: 0.9rem;
       cursor: pointer;
@@ -220,8 +251,9 @@
       align-self: flex-end;
       transition: color 0.3s ease;
     }
+
     #clear-chat:hover, #clear-chat:focus {
-      color: #00b377;
+      color: #16F1E4; /* Updated to teal */
       outline: none;
     }
 
@@ -233,19 +265,22 @@
       color: #e0e0e0;
       padding-right: 0.5rem;
     }
+
     .faq-item {
       margin-bottom: 1.5rem;
       border-bottom: 1px solid #2a2a3b;
       padding-bottom: 0.8rem;
     }
+
     .faq-question {
       font-weight: 600;
-      color: #00cc88;
+      color: #21E35D; /* Updated to green */
       margin-bottom: 0.4rem;
     }
+
     .faq-answer {
       font-weight: 400;
-      color: #b0c4ff;
+      color: #16F1E4; /* Updated to teal */
       line-height: 1.5;
     }
 
@@ -257,6 +292,7 @@
       #chatbot { height: 400px; }
       #user-input, #send-btn, #history-query, #history-btn { font-size: 0.95rem; }
     }
+
     @media (max-width: 480px) {
       header { font-size: 1.8rem; }
       .slogan { font-size: 1rem; }
@@ -264,7 +300,7 @@
       #input-area, #history-container { flex-direction: column; }
       #user-input, #send-btn, #history-query, #history-btn { width: 100%; }
     }
-  </style>
+</style>
 </head>
 <body>
   <header>Ella</header>
