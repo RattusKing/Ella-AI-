@@ -195,10 +195,15 @@ section h2 {
   margin-top: 1.5rem;
   display: flex;
   gap: 0.8rem;
+  max-width: 100%;      /* ensures container doesn’t exceed screen */
+  padding: 0 1rem;      /* optional: small horizontal padding */
+  box-sizing: border-box;
 }
 
 #user-input {
   flex-grow: 1;
+  width: 100%;          /* ensures input fills container */
+  max-width: 100%;      /* prevents overflow */
   border-radius: 30px;
   border: 1px solid #16F1E4;
   padding: 0.9rem 1.5rem;
@@ -207,7 +212,9 @@ section h2 {
   color: #00EEAA;
   background: #000000;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box; /* important for padding + width */
 }
+
 
 #user-input:focus {
   border-color: #16F1E4;
