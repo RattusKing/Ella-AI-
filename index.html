@@ -275,34 +275,6 @@ section h2 {
   outline: none;
 }
 
-/* ==============================
-   FAQ Styling
-============================== */
-.faq-list {
-  max-height: 450px;
-  overflow-y: auto;
-  font-size: 1rem;
-  color: #16F1E4;
-  padding-right: 0.5rem;
-}
-
-.faq-item {
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #222222;
-  padding-bottom: 0.8rem;
-}
-
-.faq-question {
-  font-weight: 600;
-  color: #00EEAA;
-  margin-bottom: 0.4rem;
-}
-
-.faq-answer {
-  font-weight: 400;
-  color: #16F1E4;
-  line-height: 1.5;
-}
 
 /* ==============================
    Responsive Design
@@ -359,31 +331,7 @@ section h2 {
     </section>
   </main>
 
-  <script>
-    // FAQ Data
-    const faqs = [
-      {
-        question: "What is the best way to build muscle?",
-        answer: "Focus on progressive overload, consume 1.6–2.2g of protein per kg of body weight daily, prioritize rest, and maintain consistent workouts."
-      },
-      {
-        question: "How much cardio should I do weekly?",
-        answer: "Aim for 150 minutes of moderate-intensity or 75 minutes of vigorous aerobic exercise per week, adjusted to your goals."
-      },
-      {
-        question: "What are the benefits of stretching?",
-        answer: "Stretching improves flexibility, range of motion, injury prevention, and recovery."
-      },
-      {
-        question: "How do I improve my running endurance?",
-        answer: "Increase distance gradually, use interval training, cross-train, and prioritize recovery."
-      },
-      {
-        question: "What nutrients are important for recovery?",
-        answer: "Protein, carbohydrates, and hydration are key for muscle repair and glycogen replenishment."
-      }
-    ];
-
+  
     // Utility: Format Timestamp
     function formatTimestamp(date) {
       const d = new Date(date);
@@ -393,23 +341,7 @@ section h2 {
       return `${h}:${m} ${ampm}`;
     }
 
-    // Load FAQs
-    const faqList = document.getElementById('faq-list');
-    function loadFAQs() {
-      faqList.innerHTML = '';
-      faqs.forEach(({ question, answer }) => {
-        const item = document.createElement('div');
-        item.classList.add('faq-item');
-        item.tabIndex = 0;
-        item.innerHTML = `
-          <div class="faq-question" aria-label="Question">${question}</div>
-          <div class="faq-answer" aria-label="Answer">${answer}</div>
-        `;
-        faqList.appendChild(item);
-      });
-    }
-    loadFAQs();
-
+   
     // Chatbot Functionality
     const chatbot = document.getElementById('chatbot');
     const userInput = document.getElementById('user-input');
